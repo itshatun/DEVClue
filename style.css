@@ -1548,3 +1548,45 @@ button {
     }
 
 }
+/* =========================================================
+   FIX WORD CARDS
+========================================================= */
+
+.word-card {
+    position: relative !important;
+    color: #202124 !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.word-card .card-word {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    color: #202124 !important;
+    background: transparent !important;
+
+    font-size: 18px !important;
+    font-weight: 700 !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.word-card.spy-blue .card-word,
+.word-card.spy-red .card-word,
+.word-card.spy-neutral .card-word,
+.word-card.spy-assassin .card-word {
+    color: #ffffff !important;
+}
+
+.word-card.revealed .card-word {
+    display: none !important;
+}
