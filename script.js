@@ -3168,31 +3168,18 @@ function handleCardClick(
 
 async function giveClue() {
 
-    const input =
-        $("clueInput");
-
+    const input = $("clueInput");
 
     if (!input) {
-
-        console.error(
-            "❌ clueInput not found"
-        );
-
+        console.error("❌ clueInput not found");
         return;
-
     }
 
-
-    const clue =
-        input.value.trim();
-
-
-    const selectedCount =
-        selectedClueCards.size;
-
+    const clue = input.value.trim();
+    const selectedCount = selectedClueCards.size;
 
     /* -----------------------------------------------------
-       VALIDATION
+       CHECK CLUE
     ----------------------------------------------------- */
 
     if (!clue) {
@@ -3204,13 +3191,13 @@ async function giveClue() {
         );
 
         return;
-
     }
 
+    /* -----------------------------------------------------
+       CHECK CARDS
+    ----------------------------------------------------- */
 
-    if (
-        selectedCount === 0
-    ) {
+    if (selectedCount === 0) {
 
         alert(
             currentLanguage === "ar"
@@ -3219,34 +3206,184 @@ async function giveClue() {
         );
 
         return;
-
     }
 
+    /* -----------------------------------------------------
+       CHECK PLAYER
+    ----------------------------------------------------- */
+
+    if (!currentUser || !currentPlayer || !currentRoom) {
+
+        alert(
+            currentLanguage === "ar"
+                ? "لم يتم الاتصال باللعبة بعد."
+                : "Game connection is not ready."
+        );
+
+        return;
+    }
+
+    /* -----------------------------------------------------
+       CHECK TURN
+    ----------------------------------------------------- */
 
     if (
-        !currentPlayer ||
         currentPlayer.role !== "spymaster" ||
         currentPlayer.team !== currentRoom.currentTeam ||
         currentRoom.phase !== "clue" ||
         currentRoom.status !== "playing"
     ) {
 
-        console.error(
-            "❌ Cannot give clue:",
-            {
-                currentPlayer,
-                currentTeam:
-                    currentRoom?.currentTeam,
-                phase:
-                    currentRoom?.phase,
-                status:
-                    currentRoom?.status
-            }
+        console.error("❌ Invalid clue state:", {
+            role: currentPlayer.role,
+            playerTeam: currentPlayer.team,
+            currentTeam: currentRoom.currentTeam,
+            phase: currentRoom.phase,
+            status: currentRoom.status
+        });
+
+        alert(
+            currentLanguage === "ar"
+                ? "ليس دورك لإعطاء التلميح."
+                : "It is not your turn to give a clue."
         );
 
         return;
+    }
+
+    /* -----------------------------------------------------
+       SEND TO FIREBASE
+    ----------------------------------------------------- */
+
+    const roomRef = doc(
+        db,
+        "rooms",
+        currentRoomId
+    );
+
+    try {
+
+        console.log("📤 Sending clue...");
+        console.log("Clue:", clue);
+        console.log("Number:", selectedCount);
+        console.log("Room:", currentRoomId);
+
+        await runTransaction(
+            db,
+            async transaction => {
+
+                const snapshot =
+                    await transaction.get(roomRef);
+
+                if (!snapshot.exists()) {
+                    throw new Error("ROOM_NOT_FOUND");
+                }
+
+                const room =
+                    snapshot.data();
+
+                /* Make sure it is still our turn */
+
+                if (
+                    room.status !== "playing" ||
+                    room.phase !== "clue" ||
+                    room.currentTeam !== currentPlayer.team
+                ) {
+
+                    throw new Error(
+                        "NOT_YOUR_TURN"
+                    );
+                }
+
+                /* Send clue */
+
+                transaction.update(
+                    roomRef,
+                    {
+
+                        clue: clue,
+
+                        clueNumber:
+                            selectedCount,
+
+                        clueByName:
+                            currentPlayer.name,
+
+                        clueById:
+                            currentUser.uid,
+
+                        clueTeam:
+                            currentPlayer.team,
+
+                        phase:
+                            "guessing"
+
+                    }
+                );
+
+            }
+        );
+
+        /* -------------------------------------------------
+           SUCCESS
+        ------------------------------------------------- */
+
+        console.log(
+            "✅ CLUE SENT SUCCESSFULLY"
+        );
+
+        selectedClueCards.clear();
+
+        lastRenderedRoomState = "";
 
     }
+
+    catch (error) {
+
+        console.error(
+            "❌ CLUE ERROR:",
+            error
+        );
+
+        if (
+            error.message ===
+            "ROOM_NOT_FOUND"
+        ) {
+
+            alert(
+                currentLanguage === "ar"
+                    ? "الغرفة غير موجودة."
+                    : "Room not found."
+            );
+
+        }
+
+        else if (
+            error.message ===
+            "NOT_YOUR_TURN"
+        ) {
+
+            alert(
+                currentLanguage === "ar"
+                    ? "انتهى دورك أو تغير الدور."
+                    : "Your turn has ended."
+            );
+
+        }
+
+        else {
+
+            alert(
+                currentLanguage === "ar"
+                    ? "حدث خطأ أثناء إرسال التلميح. افتحي Console لمعرفة الخطأ."
+                    : "An error occurred while sending the clue. Check the Console for details."
+            );
+
+        }
+
+    }
+
+}
 
 
     /* -----------------------------------------------------
