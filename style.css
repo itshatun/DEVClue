@@ -1549,44 +1549,80 @@ button {
 
 }
 /* =========================================================
-   FIX WORD CARDS
+   DEVCLUE - WORD CARD TEXT FIX
 ========================================================= */
 
 .word-card {
     position: relative !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
     color: #202124 !important;
+    -webkit-text-fill-color: #202124 !important;
+
     font-size: 18px !important;
     font-weight: 700 !important;
-    text-align: center !important;
+    line-height: 1.2 !important;
+
+    text-indent: 0 !important;
+    text-shadow: none !important;
+
     opacity: 1 !important;
     visibility: visible !important;
+
+    overflow: visible !important;
 }
 
-.word-card .card-word {
+/* Spymaster sees the card colors */
+.word-card.spy-blue {
+    background: #4285F4 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.word-card.spy-red {
+    background: #EA4335 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.word-card.spy-neutral {
+    background: #F1F3F4 !important;
+    color: #202124 !important;
+    -webkit-text-fill-color: #202124 !important;
+}
+
+.word-card.spy-assassin {
+    background: #202124 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Selected cards */
+.word-card.clue-target {
+    outline: 4px solid #FBBC04 !important;
+    transform: translateY(-3px) !important;
+}
+
+/* Revealed cards */
+.word-card.revealed {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+.word-card.revealed .revealed-card-content {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
 
     width: 100% !important;
     height: 100% !important;
-
-    color: #202124 !important;
-    background: transparent !important;
-
-    font-size: 18px !important;
-    font-weight: 700 !important;
-
-    opacity: 1 !important;
-    visibility: visible !important;
 }
 
-.word-card.spy-blue .card-word,
-.word-card.spy-red .card-word,
-.word-card.spy-neutral .card-word,
-.word-card.spy-assassin .card-word {
-    color: #ffffff !important;
-}
-
-.word-card.revealed .card-word {
-    display: none !important;
+.word-card.revealed .revealed-card-content img {
+    width: 55px !important;
+    height: auto !important;
+    object-fit: contain !important;
 }
