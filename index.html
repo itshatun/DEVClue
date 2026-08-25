@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DEVClue | GDG University of Taif</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         BACKGROUND
+    ========================== -->
+
+    <div class="background">
+
+        <div class="color-blob blob-blue"></div>
+        <div class="color-blob blob-red"></div>
+        <div class="color-blob blob-yellow"></div>
+        <div class="color-blob blob-green"></div>
+
+        <div class="grid-pattern"></div>
+
+        <div class="code-symbol symbol-one">&lt;/&gt;</div>
+        <div class="code-symbol symbol-two">{ }</div>
+        <div class="code-symbol symbol-three">&lt; / &gt;</div>
+
+        <div class="puzzle puzzle-one">
+            <div></div>
+        </div>
+
+        <div class="puzzle puzzle-two">
+            <div></div>
+        </div>
+
+        <div class="dots dots-one">
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+        </div>
+
+        <div class="dots dots-two">
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+        </div>
+
+        <div class="node node-one"></div>
+        <div class="node node-two"></div>
+        <div class="node node-three"></div>
+        <div class="node node-four"></div>
+
+        <div class="connection connection-one"></div>
+        <div class="connection connection-two"></div>
+
+    </div>
+
+
+    <!-- =========================
+         START SCREEN
+    ========================== -->
+
+    <main id="startScreen" class="screen start-screen">
+
+        <div class="content">
+
+            <img
+                src="Optional Logo - GDGs Stacked - Light.png"
+                alt="Google Developer Group University of Taif"
+                class="logo"
+            >
+
+            <h1 class="devclue">
+                <span class="dev">DEV</span>
+                <span class="c">C</span>
+                <span class="l">l</span>
+                <span class="u">u</span>
+                <span class="e">e</span>
+            </h1>
+
+            <p class="tagline">
+                Think. Connect. Guess.
+            </p>
+
+            <div class="color-line">
+                <span class="blue"></span>
+                <span class="red"></span>
+                <span class="yellow"></span>
+                <span class="green"></span>
+            </div>
+
+            <div class="language-buttons">
+
+                <button
+                    id="arabicButton"
+                    class="language-button blue-button"
+                >
+                    العربية
+                </button>
+
+                <button
+                    id="englishButton"
+                    class="language-button green-button"
+                >
+                    English
+                </button>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================
+         CREATE / JOIN SCREEN
+    ========================== -->
+
+    <main id="roomScreen" class="screen hidden">
+
+        <div class="room-wrapper">
+
+            <div class="mini-brand">
+                DEV<span>Clue</span>
+            </div>
+
+            <div class="room-heading">
+                <h2 id="roomTitle">Play DEVClue</h2>
+
+                <p id="roomSubtitle">
+                    Create a room or join your team.
+                </p>
+            </div>
+
+            <div class="room-actions">
+
+                <section class="room-card create-card">
+
+                    <div class="room-icon blue-icon">
+                        +
+                    </div>
+
+                    <h3 id="createTitle">
+                        Create a Room
+                    </h3>
+
+                    <p id="createText">
+                        Start a new game and invite your team.
+                    </p>
+
+                    <button
+                        id="createRoomButton"
+                        class="primary-button large-button"
+                    >
+                        Create Room
+                    </button>
+
+                </section>
+
+
+                <section class="room-card join-card">
+
+                    <div class="room-icon green-icon">
+                        →
+                    </div>
+
+                    <h3 id="joinTitle">
+                        Join a Room
+                    </h3>
+
+                    <p id="joinText">
+                        Enter the room code shared by your host.
+                    </p>
+
+                    <input
+                        id="joinRoomCode"
+                        class="text-input"
+                        type="text"
+                        maxlength="6"
+                        placeholder="Room Code"
+                        autocomplete="off"
+                    >
+
+                    <button
+                        id="joinRoomButton"
+                        class="secondary-green-button large-button"
+                    >
+                        Join Room
+                    </button>
+
+                </section>
+
+            </div>
+
+            <button
+                id="backToLanguageButton"
+                class="back-button"
+            >
+                ← Back
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================
+         PLAYER NAME SCREEN
+    ========================== -->
+
+    <main id="nameScreen" class="screen hidden">
+
+        <div class="simple-panel">
+
+            <div class="mini-brand">
+                DEV<span>Clue</span>
+            </div>
+
+            <h2 id="nameTitle">
+                Enter your name
+            </h2>
+
+            <p id="nameSubtitle">
+                This is how your teammates will see you.
+            </p>
+
+            <input
+                id="playerName"
+                class="text-input big-input"
+                type="text"
+                maxlength="18"
+                placeholder="Your name"
+                autocomplete="off"
+            >
+
+            <button
+                id="continueNameButton"
+                class="primary-button large-button"
+            >
+                Continue
+            </button>
+
+            <button
+                id="backToRoomButton"
+                class="back-button"
+            >
+                ← Back
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================
+         LOBBY
+    ========================== -->
+
+    <main id="lobbyScreen" class="screen hidden">
+
+        <div class="lobby-wrapper">
+
+            <header class="lobby-header">
+
+                <div>
+
+                    <!-- GDG LOGO -->
+                    <img
+                        src="Optional Logo - GDGs Stacked - Light.png"
+                        alt="Google Developer Group University of Taif"
+                        class="lobby-logo"
+                    >
+
+                    <p id="lobbySubtitle">
+                        Choose your team and role.
+                    </p>
+
+                </div>
+
+
+                <div class="room-code-box">
+
+                    <span id="roomCodeLabel">
+                        ROOM CODE
+                    </span>
+
+                    <strong id="roomCode">
+                        ------
+                    </strong>
+
+                    <button id="copyRoomButton">
+                        Copy
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <section class="lobby-board">
+
+                <!-- BLUE -->
+
+                <div class="team-lobby blue-team-lobby">
+
+                    <div class="team-title blue-title">
+
+                        <span>🔵</span>
+
+                        <h2 id="blueTeamTitle">
+                            Blue Team
+                        </h2>
+
+                    </div>
+
+
+                    <div class="role-box">
+
+                        <div class="role-title">
+                            Spymaster
+                        </div>
+
+                        <div
+                            id="blueSpymaster"
+                            class="player-list"
+                        >
+                            <span class="empty-player">
+                                Empty
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="role-box">
+
+                        <div class="role-title">
+                            Operatives
+                        </div>
+
+                        <div
+                            id="blueOperatives"
+                            class="player-list"
+                        >
+                            <span class="empty-player">
+                                Empty
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CENTER -->
+
+                <div class="lobby-center">
+
+                    <div class="you-badge">
+                        YOU
+                    </div>
+
+                    <div class="role-selection">
+
+                        <h3 id="teamChoiceTitle">
+                            Choose your team
+                        </h3>
+
+                        <div class="choice-row">
+
+                            <button
+                                id="chooseBlueButton"
+                                class="team-choice blue-choice"
+                            >
+                                🔵 Blue
+                            </button>
+
+                            <button
+                                id="chooseRedButton"
+                                class="team-choice red-choice"
+                            >
+                                🔴 Red
+                            </button>
+
+                        </div>
+
+
+                        <h3 id="roleChoiceTitle">
+                            Choose your role
+                        </h3>
+
+                        <div class="choice-row">
+
+                            <button
+                                id="chooseSpyButton"
+                                class="role-choice"
+                            >
+                                🕵🏻 Spymaster
+                            </button>
+
+                            <button
+                                id="chooseOperativeButton"
+                                class="role-choice"
+                            >
+                                👥 Operative
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="hostControls"
+                        class="host-controls hidden"
+                    >
+
+                        <p id="hostText">
+                            You are the host.
+                        </p>
+
+                        <button
+                            id="startGameButton"
+                            class="start-game-button"
+                        >
+                            START GAME
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="waitingText"
+                        class="waiting-text"
+                    >
+                        Waiting for the host...
+                    </div>
+
+                </div>
+
+
+                <!-- RED -->
+
+                <div class="team-lobby red-team-lobby">
+
+                    <div class="team-title red-title">
+
+                        <span>🔴</span>
+
+                        <h2 id="redTeamTitle">
+                            Red Team
+                        </h2>
+
+                    </div>
+
+
+                    <div class="role-box">
+
+                        <div class="role-title">
+                            Spymaster
+                        </div>
+
+                        <div
+                            id="redSpymaster"
+                            class="player-list"
+                        >
+                            <span class="empty-player">
+                                Empty
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="role-box">
+
+                        <div class="role-title">
+                            Operatives
+                        </div>
+
+                        <div
+                            id="redOperatives"
+                            class="player-list"
+                        >
+                            <span class="empty-player">
+                                Empty
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================
+         GAME
+    ========================== -->
+
+    <main id="gameScreen" class="screen hidden">
+
+        <header class="game-header">
+
+            <div class="game-brand">
+                DEV<span>Clue</span>
+            </div>
+
+            <div class="game-room">
+
+                <span>
+                    Room
+                </span>
+
+                <strong id="gameRoomCode">
+                    ------
+                </strong>
+
+            </div>
+
+            <div class="round-info">
+
+                <span id="roundLabel">
+                    Round 1
+                </span>
+
+                <span
+                    id="turnLabel"
+                    class="turn-label"
+                >
+                    Team Blue
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================
+             SPYMASTER GAME VIEW
+        ========================== -->
+
+        <section
+            id="spymasterView"
+            class="game-view hidden"
+        >
+
+            <div class="game-topbar">
+
+                <div>
+
+                    <span class="role-small">
+                        SPYMASTER
+                    </span>
+
+                    <h2 id="spymasterTitle">
+                        Team Blue
+                    </h2>
+
+                </div>
+
+
+                <div class="score-board">
+
+                    <div class="score blue-score">
+
+                        <span>
+                            BLUE
+                        </span>
+
+                        <strong id="blueScore">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="score red-score">
+
+                        <span>
+                            RED
+                        </span>
+
+                        <strong id="redScore">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="spymasterInstruction"
+                class="instruction"
+            >
+                Give your team a clue
+            </div>
+
+
+            <section
+                id="spymasterCards"
+                class="cards-container"
+            ></section>
+
+
+            <div
+                id="cluePanel"
+                class="clue-panel"
+            >
+
+                <label for="clueInput">
+                    Your Clue
+                </label>
+
+                <div class="clue-input-row">
+
+                    <input
+                        id="clueInput"
+                        type="text"
+                        placeholder="Enter your clue..."
+                        maxlength="30"
+                    >
+
+                    <input
+                        id="clueNumber"
+                        type="number"
+                        min="1"
+                        max="9"
+                        value="1"
+                    >
+
+                    <button
+                        id="giveClueButton"
+                        class="primary-button"
+                    >
+                        Give Clue
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             OPERATIVE GAME VIEW
+        ========================== -->
+
+        <section
+            id="operativesView"
+            class="game-view hidden"
+        >
+
+            <div class="game-topbar">
+
+                <div>
+
+                    <span class="role-small">
+                        OPERATIVES
+                    </span>
+
+                    <h2 id="operativeTitle">
+                        Team Blue
+                    </h2>
+
+                </div>
+
+
+                <div class="score-board">
+
+                    <div class="score blue-score">
+
+                        <span>
+                            BLUE
+                        </span>
+
+                        <strong id="operativeBlueScore">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="score red-score">
+
+                        <span>
+                            RED
+                        </span>
+
+                        <strong id="operativeRedScore">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="current-clue">
+
+                <span>
+                    CLUE
+                </span>
+
+                <strong id="currentClue">
+                    —
+                </strong>
+
+                <strong id="currentClueNumber">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div
+                id="operativeInstruction"
+                class="instruction"
+            >
+                Choose a card
+            </div>
+
+
+            <section
+                id="operativeCards"
+                class="cards-container"
+            ></section>
+
+        </section>
+
+
+        <!-- =========================
+             GAME OVER
+        ========================== -->
+
+        <div
+            id="gameOverPanel"
+            class="game-over hidden"
+        >
+
+            <div class="game-over-card">
+
+                <span>
+                    GAME OVER
+                </span>
+
+                <h2 id="winnerText">
+                    Blue Team Wins!
+                </h2>
+
+                <button
+                    id="newRoundButton"
+                    class="primary-button large-button"
+                >
+                    New Round
+                </button>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================
+         FIREBASE / APP
+    ========================== -->
+
+    <script
+        type="module"
+        src="script.js"
+    ></script>
+
+</body>
+
+</html>
