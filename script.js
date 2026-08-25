@@ -36,9 +36,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getFirestore(app);
 
 
@@ -47,27 +45,19 @@ const db = getFirestore(app);
 ========================================================= */
 
 let currentUser = null;
-
 let currentRoomId = null;
-
 let currentRoom = null;
-
 let currentPlayer = null;
-
 let players = [];
 
 let currentLanguage = "en";
-
 let roomMode = null;
 
 let roomListener = null;
-
 let playersListener = null;
 
 let authReady = false;
-
 let activeScreen = "";
-
 let lastRenderedRoomState = "";
 
 
@@ -78,7 +68,6 @@ let lastRenderedRoomState = "";
     the cards connected to the clue.
 
     These are NEVER saved to Firestore.
-    Therefore Operatives cannot see them.
 */
 
 let selectedClueCards = new Set();
@@ -195,7 +184,6 @@ signInAnonymously(auth)
 
 onAuthStateChanged(
     auth,
-
     user => {
 
         currentUser = user;
@@ -235,10 +223,7 @@ function showScreen(id) {
 
         });
 
-
-    const screen =
-        $(id);
-
+    const screen = $(id);
 
     if (screen) {
 
@@ -429,121 +414,97 @@ function applyLanguage() {
         $("roomTitle").textContent =
             t.roomTitle;
 
-
     if ($("roomSubtitle"))
         $("roomSubtitle").textContent =
             t.roomSubtitle;
-
 
     if ($("createTitle"))
         $("createTitle").textContent =
             t.createTitle;
 
-
     if ($("createText"))
         $("createText").textContent =
             t.createText;
-
 
     if ($("createRoomButton"))
         $("createRoomButton").textContent =
             t.createButton;
 
-
     if ($("joinTitle"))
         $("joinTitle").textContent =
             t.joinTitle;
-
 
     if ($("joinText"))
         $("joinText").textContent =
             t.joinText;
 
-
     if ($("joinRoomButton"))
         $("joinRoomButton").textContent =
             t.joinButton;
-
 
     if ($("nameTitle"))
         $("nameTitle").textContent =
             t.nameTitle;
 
-
     if ($("nameSubtitle"))
         $("nameSubtitle").textContent =
             t.nameSubtitle;
-
 
     if ($("continueNameButton"))
         $("continueNameButton").textContent =
             t.continue;
 
-
     if ($("backToLanguageButton"))
         $("backToLanguageButton").textContent =
             t.back;
-
 
     if ($("backToRoomButton"))
         $("backToRoomButton").textContent =
             t.back;
 
-
     if ($("lobbySubtitle"))
         $("lobbySubtitle").textContent =
             t.lobbySubtitle;
-
 
     if ($("roomCodeLabel"))
         $("roomCodeLabel").textContent =
             t.roomCode;
 
-
     if ($("copyRoomButton"))
         $("copyRoomButton").textContent =
             t.copy;
-
 
     if ($("teamChoiceTitle"))
         $("teamChoiceTitle").textContent =
             t.team;
 
-
     if ($("roleChoiceTitle"))
         $("roleChoiceTitle").textContent =
             t.role;
-
 
     if ($("chooseBlueButton"))
         $("chooseBlueButton").textContent =
             `🔵 ${t.blue}`;
 
-
     if ($("chooseRedButton"))
         $("chooseRedButton").textContent =
             `🔴 ${t.red}`;
-
 
     if ($("chooseSpyButton"))
         $("chooseSpyButton").textContent =
             `🕵🏻 ${t.spy}`;
 
-
     if ($("chooseOperativeButton"))
         $("chooseOperativeButton").textContent =
             `👥 ${t.operative}`;
-
 
     if ($("hostText"))
         $("hostText").textContent =
             t.host;
 
-
     if ($("waitingText"))
         $("waitingText").textContent =
             t.waiting;
-
 
     if ($("startGameButton"))
         $("startGameButton").textContent =
@@ -816,9 +777,7 @@ function generateRoomCode() {
     const characters =
         "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-
     let code = "";
-
 
     for (
         let i = 0;
@@ -836,7 +795,6 @@ function generateRoomCode() {
 
     }
 
-
     return code;
 
 }
@@ -851,9 +809,7 @@ async function createRoom(
 ) {
 
     let code;
-
     let roomRef;
-
     let snapshot;
 
 
@@ -862,14 +818,12 @@ async function createRoom(
         code =
             generateRoomCode();
 
-
         roomRef =
             doc(
                 db,
                 "rooms",
                 code
             );
-
 
         snapshot =
             await getDoc(
@@ -1028,13 +982,10 @@ function openRoom(
     currentRoomId =
         code;
 
-
     activeScreen = "";
-
 
     lastRenderedRoomState =
         "";
-
 
     selectedClueCards.clear();
 
@@ -1231,6 +1182,14 @@ function listenToPlayers() {
                     )
                 ) {
 
+                    /*
+                       Player changes should immediately
+                       refresh the game permissions/UI.
+                    */
+
+                    lastRenderedRoomState =
+                        "";
+
                     renderGameBoard();
 
                 }
@@ -1278,20 +1237,17 @@ function updateLobby() {
         $("blueSpymaster")
     );
 
-
     renderPlayerList(
         "blue",
         "operative",
         $("blueOperatives")
     );
 
-
     renderPlayerList(
         "red",
         "spymaster",
         $("redSpymaster")
     );
-
 
     renderPlayerList(
         "red",
@@ -1432,21 +1388,17 @@ function renderPlayerList(
                 "span"
             );
 
-
         empty.className =
             "empty-player";
-
 
         empty.textContent =
             currentLanguage === "ar"
                 ? "فارغ"
                 : "Empty";
 
-
         container.appendChild(
             empty
         );
-
 
         return;
 
@@ -1460,7 +1412,6 @@ function renderPlayerList(
                 document.createElement(
                     "span"
                 );
-
 
             pill.className =
                 "player-pill";
@@ -1603,10 +1554,6 @@ async function chooseRole(
     }
 
 
-    /*
-       Only one Spymaster per team.
-    */
-
     if (
         role ===
         "spymaster"
@@ -1711,12 +1658,19 @@ async function startGame() {
     ---------------------------------------------------------
     */
 
+    const language =
+        currentRoom.language ||
+        currentLanguage;
+
+
+    const sourceWords =
+        words[language] ||
+        words.en;
+
+
     const selectedWords =
         shuffle(
-            words[
-                currentRoom.language ||
-                currentLanguage
-            ]
+            sourceWords
         ).slice(
             0,
             25
@@ -1739,18 +1693,6 @@ async function startGame() {
     ---------------------------------------------------------
     CARD TYPES
     ---------------------------------------------------------
-
-    Starting team:
-        9 cards
-
-    Other team:
-        8 cards
-
-    Neutral:
-        7 cards
-
-    Assassin:
-        1 card
     */
 
     const types = [];
@@ -1816,6 +1758,12 @@ async function startGame() {
         shuffle(types);
 
 
+    /*
+    ---------------------------------------------------------
+    CREATE CARDS
+    ---------------------------------------------------------
+    */
+
     const cards =
         selectedWords.map(
             (word, index) => ({
@@ -1823,7 +1771,8 @@ async function startGame() {
                 id:
                     index,
 
-                word,
+                word:
+                    String(word),
 
                 type:
                     shuffledTypes[index],
@@ -1833,6 +1782,16 @@ async function startGame() {
 
             })
         );
+
+
+    /*
+       Reset local UI before starting.
+    */
+
+    selectedClueCards.clear();
+
+    lastRenderedRoomState =
+        "";
 
 
     await updateDoc(
@@ -1907,12 +1866,8 @@ function openGame() {
 
     /*
        IMPORTANT:
-       Do NOT clear selectedClueCards here.
-
-       The room listener may receive several updates
-       while the Spymaster is selecting cards.
+       Do not clear selectedClueCards here.
     */
-
 
     renderGameBoard();
 
@@ -1932,7 +1887,9 @@ function renderGameBoard() {
     if (
         !gameScreen ||
         !currentRoom ||
-        !currentRoom.cards ||
+        !Array.isArray(
+            currentRoom.cards
+        ) ||
         !currentPlayer
     ) {
 
@@ -1940,17 +1897,6 @@ function renderGameBoard() {
 
     }
 
-
-    /*
-    ---------------------------------------------------------
-    STATE KEY
-    ---------------------------------------------------------
-
-    Prevents unnecessary full redraws.
-
-    We include selectedClueCards because
-    those are local UI changes.
-    */
 
     const stateKey =
         JSON.stringify({
@@ -1986,15 +1932,12 @@ function renderGameBoard() {
                 currentPlayer.team,
 
             selectedClueCards:
-                [...selectedClueCards].sort()
+                [
+                    ...selectedClueCards
+                ].sort()
 
         });
 
-
-    /*
-       Nothing changed.
-       Don't redraw the whole game.
-    */
 
     if (
         stateKey ===
@@ -2018,31 +1961,25 @@ function renderGameBoard() {
         gameScreen
     );
 
-
     renderTurnMessage(
         gameScreen
     );
-
 
     renderClue(
         gameScreen
     );
 
-
     renderBoard(
         gameScreen
     );
-
 
     renderControls(
         gameScreen
     );
 
-
     renderScores(
         gameScreen
     );
-
 
     renderGameOver(
         gameScreen
@@ -2064,7 +2001,6 @@ function renderGameHeader(
             "div"
         );
 
-
     header.className =
         "game-header";
 
@@ -2073,7 +2009,6 @@ function renderGameHeader(
         document.createElement(
             "h1"
         );
-
 
     title.textContent =
         "DEVClue";
@@ -2084,16 +2019,16 @@ function renderGameHeader(
             "div"
         );
 
-
     room.className =
         "game-room";
-
 
     room.innerHTML =
         `
         Room
         <strong>
-            ${currentRoomId}
+            ${escapeHtml(
+                currentRoomId
+            )}
         </strong>
         `;
 
@@ -2103,10 +2038,8 @@ function renderGameHeader(
             "div"
         );
 
-
     round.className =
         "game-round";
-
 
     round.textContent =
         currentLanguage === "ar"
@@ -2118,11 +2051,9 @@ function renderGameHeader(
         title
     );
 
-
     header.appendChild(
         room
     );
-
 
     header.appendChild(
         round
@@ -2149,7 +2080,6 @@ function renderTurnMessage(
             "div"
         );
 
-
     turn.className =
         "game-turn";
 
@@ -2174,12 +2104,6 @@ function renderTurnMessage(
             );
 
 
-    /*
-    ---------------------------------------------------------
-    GAME OVER
-    ---------------------------------------------------------
-    */
-
     if (
         currentRoom.status ===
         "finished"
@@ -2193,16 +2117,15 @@ function renderTurnMessage(
     }
 
 
-    /*
-    ---------------------------------------------------------
-    OTHER TEAM
-    ---------------------------------------------------------
-    */
-
     else if (
         currentPlayer.team !==
         currentTeam
     ) {
+
+        /*
+           Opposite team clearly sees that
+           it is NOT their turn.
+        */
 
         turn.textContent =
             currentLanguage === "ar"
@@ -2213,12 +2136,6 @@ function renderTurnMessage(
 
     }
 
-
-    /*
-    ---------------------------------------------------------
-    MY TEAM - CLUE
-    ---------------------------------------------------------
-    */
 
     else if (
         currentRoom.phase ===
@@ -2252,12 +2169,6 @@ function renderTurnMessage(
 
     }
 
-
-    /*
-    ---------------------------------------------------------
-    MY TEAM - GUESSING
-    ---------------------------------------------------------
-    */
 
     else {
 
@@ -2318,7 +2229,6 @@ function renderClue(
             "div"
         );
 
-
     clueBox.className =
         "current-clue";
 
@@ -2365,9 +2275,25 @@ function renderBoard(
             "div"
         );
 
-
     board.className =
         "game-board";
+
+
+    /*
+       Fallback list.
+
+       If Firestore somehow does not contain
+       cardData.word, we get the word using
+       the card ID.
+    */
+
+    const language =
+        currentRoom.language ||
+        currentLanguage;
+
+    const fallbackWords =
+        words[language] ||
+        words.en;
 
 
     currentRoom.cards.forEach(
@@ -2379,12 +2305,40 @@ function renderBoard(
                 );
 
 
+            card.type =
+                "button";
+
+
             card.className =
                 "word-card";
 
 
             card.dataset.id =
                 cardData.id;
+
+
+            /*
+            -------------------------------------------------
+            GET WORD SAFELY
+            -------------------------------------------------
+            */
+
+            const cardWord =
+                cardData.word !== undefined &&
+                cardData.word !== null &&
+                String(cardData.word).trim() !== ""
+
+                    ? String(
+                        cardData.word
+                    )
+
+                    : (
+                        fallbackWords[
+                            Number(
+                                cardData.id
+                            )
+                        ] || "—"
+                    );
 
 
             /*
@@ -2399,15 +2353,91 @@ function renderBoard(
 
                 renderRevealedCard(
                     card,
-                    cardData
+                    {
+                        ...cardData,
+                        word:
+                            cardWord
+                    }
                 );
 
             }
 
+
+            /*
+            -------------------------------------------------
+            NOT REVEALED
+            -------------------------------------------------
+            */
+
             else {
 
-                card.textContent =
-                    cardData.word;
+                /*
+                   Use a separate span instead of
+                   putting text directly inside button.
+
+                   This protects the word from CSS
+                   rules such as color: transparent
+                   or font-size: 0.
+                */
+
+                const wordElement =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                wordElement.className =
+                    "card-word";
+
+
+                wordElement.textContent =
+                    cardWord;
+
+
+                /*
+                   FORCE visible text.
+                */
+
+                wordElement.style.setProperty(
+                    "display",
+                    "block",
+                    "important"
+                );
+
+                wordElement.style.setProperty(
+                    "visibility",
+                    "visible",
+                    "important"
+                );
+
+                wordElement.style.setProperty(
+                    "opacity",
+                    "1",
+                    "important"
+                );
+
+                wordElement.style.setProperty(
+                    "color",
+                    "#202124",
+                    "important"
+                );
+
+                wordElement.style.setProperty(
+                    "font-size",
+                    "18px",
+                    "important"
+                );
+
+                wordElement.style.setProperty(
+                    "font-weight",
+                    "700",
+                    "important"
+                );
+
+
+                card.appendChild(
+                    wordElement
+                );
 
             }
 
@@ -2431,6 +2461,28 @@ function renderBoard(
                 card.classList.add(
                     `spy-${cardData.type}`
                 );
+
+
+                /*
+                   Make text white on colored
+                   Spymaster cards.
+                */
+
+                const wordElement =
+                    card.querySelector(
+                        ".card-word"
+                    );
+
+
+                if (wordElement) {
+
+                    wordElement.style.setProperty(
+                        "color",
+                        "#ffffff",
+                        "important"
+                    );
+
+                }
 
             }
 
@@ -2508,19 +2560,10 @@ function renderRevealedCard(
     );
 
 
-    /*
-       IMPORTANT:
-
-       The word is hidden after revealing.
-
-       Only the GDG logo is shown.
-    */
-
     const content =
         document.createElement(
             "div"
         );
-
 
     content.className =
         "revealed-card-content";
@@ -2538,6 +2581,18 @@ function renderRevealedCard(
 
     logo.alt =
         "GDG";
+
+
+    logo.style.maxWidth =
+        "60px";
+
+
+    logo.style.maxHeight =
+        "60px";
+
+
+    logo.style.objectFit =
+        "contain";
 
 
     content.appendChild(
@@ -2578,7 +2633,6 @@ function renderControls(
             "div"
         );
 
-
     controls.className =
         "game-controls";
 
@@ -2611,11 +2665,9 @@ function renderControls(
             controls
         );
 
-
         gameScreen.appendChild(
             controls
         );
-
 
         return;
 
@@ -2645,11 +2697,9 @@ function renderControls(
             controls
         );
 
-
         gameScreen.appendChild(
             controls
         );
-
 
         return;
 
@@ -2819,6 +2869,17 @@ function renderSpymasterControls(
         `;
 
 
+    const clueInput =
+        $("clueInput");
+
+
+    if (clueInput) {
+
+        clueInput.focus();
+
+    }
+
+
     const giveButton =
         $("giveClueButton");
 
@@ -2962,6 +3023,14 @@ function handleCardClick(
         }
 
 
+        /*
+           Force local render.
+        */
+
+        lastRenderedRoomState =
+            "";
+
+
         renderGameBoard();
 
         return;
@@ -3101,11 +3170,6 @@ async function giveClue() {
     }
 
 
-    /*
-       The clue number is automatically
-       equal to selected cards.
-    */
-
     await updateDoc(
         doc(
             db,
@@ -3127,12 +3191,6 @@ async function giveClue() {
 
 
     selectedClueCards.clear();
-
-
-    /*
-       Clear local render cache so
-       the new phase renders immediately.
-    */
 
     lastRenderedRoomState =
         "";
@@ -3268,10 +3326,6 @@ async function makeGuess(
                     cards[index];
 
 
-                /*
-                   Reveal card.
-                */
-
                 cards[index] = {
 
                     ...card,
@@ -3360,12 +3414,6 @@ async function makeGuess(
                         );
 
 
-                    /*
-                    --------------------------------------------
-                    WIN
-                    --------------------------------------------
-                    */
-
                     if (
                         remaining === 0
                     ) {
@@ -3392,11 +3440,6 @@ async function makeGuess(
 
                     }
 
-
-                    /*
-                       Correct card:
-                       Stay in guessing phase.
-                    */
 
                     transaction.update(
                         roomRef,
@@ -3455,13 +3498,8 @@ async function makeGuess(
         );
 
 
-        /*
-           Force local render cache reset.
-        */
-
         lastRenderedRoomState =
             "";
-
 
     }
 
@@ -3613,7 +3651,6 @@ async function endTurn(
 
 
     selectedClueCards.clear();
-
 
     lastRenderedRoomState =
         "";
@@ -3812,7 +3849,9 @@ function countRemaining(
 
     if (
         !currentRoom ||
-        !currentRoom.cards
+        !Array.isArray(
+            currentRoom.cards
+        )
     ) {
 
         return 0;
@@ -3833,6 +3872,15 @@ function countRemainingFromCards(
     team
 ) {
 
+    if (
+        !Array.isArray(cards)
+    ) {
+
+        return 0;
+
+    }
+
+
     return cards.filter(
         card =>
             card.type === team &&
@@ -3848,7 +3896,9 @@ function countRevealed(
 
     if (
         !currentRoom ||
-        !currentRoom.cards
+        !Array.isArray(
+            currentRoom.cards
+        )
     ) {
 
         return 0;
