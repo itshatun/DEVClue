@@ -16,7 +16,8 @@ import {
     updateDoc,
     collection,
     onSnapshot,
-    serverTimestamp
+    serverTimestamp,
+    runTransaction
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
@@ -63,11 +64,23 @@ let roomListener = null;
 
 let playersListener = null;
 
+let authReady = false;
+
+let activeScreen = "";
+
+let lastRenderedRoomState = "";
+
+
 /*
-   This is LOCAL to the Spymaster.
-   Operatives never see which cards
-   the Spymaster selected.
+    Local only.
+
+    Used by the Spymaster while selecting
+    the cards connected to the clue.
+
+    These are NEVER saved to Firestore.
+    Therefore Operatives cannot see them.
 */
+
 let selectedClueCards = new Set();
 
 
@@ -155,7 +168,7 @@ const $ = id =>
 
 
 /* =========================================================
-   AUTH
+   FIREBASE AUTH
 ========================================================= */
 
 signInAnonymously(auth)
@@ -187,6 +200,8 @@ onAuthStateChanged(
 
         currentUser = user;
 
+        authReady = !!user;
+
         if (user) {
 
             console.log(
@@ -206,20 +221,32 @@ onAuthStateChanged(
 
 function showScreen(id) {
 
+    if (activeScreen === id) {
+        return;
+    }
+
     document
         .querySelectorAll(".screen")
         .forEach(screen => {
 
-            screen.classList.add("hidden");
+            screen.classList.add(
+                "hidden"
+            );
 
         });
 
 
-    const screen = $(id);
+    const screen =
+        $(id);
+
 
     if (screen) {
 
-        screen.classList.remove("hidden");
+        screen.classList.remove(
+            "hidden"
+        );
+
+        activeScreen = id;
 
     }
 
@@ -529,188 +556,123 @@ function applyLanguage() {
    LANGUAGE BUTTONS
 ========================================================= */
 
-$("arabicButton")?.addEventListener(
-    "click",
-    () => {
+if ($("arabicButton")) {
 
-        currentLanguage = "ar";
+    $("arabicButton")
+        .addEventListener(
+            "click",
+            () => {
 
-        applyLanguage();
+                currentLanguage = "ar";
 
-        showScreen(
-            "roomScreen"
+                applyLanguage();
+
+                showScreen(
+                    "roomScreen"
+                );
+
+            }
         );
 
-    }
-);
+}
 
 
-$("englishButton")?.addEventListener(
-    "click",
-    () => {
+if ($("englishButton")) {
 
-        currentLanguage = "en";
+    $("englishButton")
+        .addEventListener(
+            "click",
+            () => {
 
-        applyLanguage();
+                currentLanguage = "en";
 
-        showScreen(
-            "roomScreen"
+                applyLanguage();
+
+                showScreen(
+                    "roomScreen"
+                );
+
+            }
         );
 
-    }
-);
+}
 
 
 /* =========================================================
-   BACK
+   BACK BUTTONS
 ========================================================= */
 
-$("backToLanguageButton")?.addEventListener(
-    "click",
-    () => {
+if ($("backToLanguageButton")) {
 
-        showScreen(
-            "startScreen"
+    $("backToLanguageButton")
+        .addEventListener(
+            "click",
+            () => {
+
+                showScreen(
+                    "startScreen"
+                );
+
+            }
         );
 
-    }
-);
+}
 
 
-$("backToRoomButton")?.addEventListener(
-    "click",
-    () => {
+if ($("backToRoomButton")) {
 
-        showScreen(
-            "roomScreen"
+    $("backToRoomButton")
+        .addEventListener(
+            "click",
+            () => {
+
+                showScreen(
+                    "roomScreen"
+                );
+
+            }
         );
 
-    }
-);
+}
 
 
 /* =========================================================
    CREATE ROOM
 ========================================================= */
 
-$("createRoomButton")?.addEventListener(
-    "click",
-    () => {
+if ($("createRoomButton")) {
 
-        roomMode =
-            "create";
+    $("createRoomButton")
+        .addEventListener(
+            "click",
+            () => {
 
-        $("playerName").value =
-            "";
+                roomMode =
+                    "create";
 
-        showScreen(
-            "nameScreen"
+                $("playerName").value =
+                    "";
+
+                showScreen(
+                    "nameScreen"
+                );
+
+            }
         );
 
-    }
-);
+}
 
 
 /* =========================================================
    JOIN ROOM
 ========================================================= */
 
-$("joinRoomButton")?.addEventListener(
-    "click",
-    () => {
+if ($("joinRoomButton")) {
 
-        const code =
-            $("joinRoomCode")
-                .value
-                .trim()
-                .toUpperCase();
-
-
-        if (
-            code.length !== 6
-        ) {
-
-            alert(
-                currentLanguage === "ar"
-                    ? "أدخل كود مكون من 6 أحرف."
-                    : "Enter a 6-character room code."
-            );
-
-            return;
-
-        }
-
-
-        roomMode =
-            "join";
-
-
-        $("playerName").value =
-            "";
-
-
-        showScreen(
-            "nameScreen"
-        );
-
-    }
-);
-
-
-/* =========================================================
-   NAME
-========================================================= */
-
-$("continueNameButton")?.addEventListener(
-    "click",
-    async () => {
-
-        const name =
-            $("playerName")
-                .value
-                .trim();
-
-
-        if (!name) {
-
-            alert(
-                currentLanguage === "ar"
-                    ? "اكتب اسمك أولًا."
-                    : "Enter your name first."
-            );
-
-            return;
-
-        }
-
-
-        if (!currentUser) {
-
-            alert(
-                currentLanguage === "ar"
-                    ? "جاري الاتصال، حاول مرة أخرى."
-                    : "Connecting to Firebase..."
-            );
-
-            return;
-
-        }
-
-
-        try {
-
-            if (
-                roomMode ===
-                "create"
-            ) {
-
-                await createRoom(
-                    name
-                );
-
-            }
-
-            else {
+    $("joinRoomButton")
+        .addEventListener(
+            "click",
+            () => {
 
                 const code =
                     $("joinRoomCode")
@@ -719,27 +681,130 @@ $("continueNameButton")?.addEventListener(
                         .toUpperCase();
 
 
-                await joinRoom(
-                    code,
-                    name
+                if (
+                    code.length !== 6
+                ) {
+
+                    alert(
+                        currentLanguage === "ar"
+                            ? "أدخل كود مكون من 6 أحرف."
+                            : "Enter a 6-character room code."
+                    );
+
+                    return;
+
+                }
+
+
+                roomMode =
+                    "join";
+
+                $("playerName").value =
+                    "";
+
+                showScreen(
+                    "nameScreen"
                 );
 
             }
+        );
 
-        }
+}
 
-        catch (error) {
 
-            console.error(error);
+/* =========================================================
+   NAME
+========================================================= */
 
-            alert(
-                error.message
-            );
+if ($("continueNameButton")) {
 
-        }
+    $("continueNameButton")
+        .addEventListener(
+            "click",
+            async () => {
 
-    }
-);
+                const name =
+                    $("playerName")
+                        .value
+                        .trim();
+
+
+                if (!name) {
+
+                    alert(
+                        currentLanguage === "ar"
+                            ? "اكتب اسمك أولًا."
+                            : "Enter your name first."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    !authReady ||
+                    !currentUser
+                ) {
+
+                    alert(
+                        currentLanguage === "ar"
+                            ? "جاري الاتصال، حاول مرة أخرى."
+                            : "Connecting to Firebase..."
+                    );
+
+                    return;
+
+                }
+
+
+                try {
+
+                    if (
+                        roomMode ===
+                        "create"
+                    ) {
+
+                        await createRoom(
+                            name
+                        );
+
+                    }
+
+                    else {
+
+                        const code =
+                            $("joinRoomCode")
+                                .value
+                                .trim()
+                                .toUpperCase();
+
+
+                        await joinRoom(
+                            code,
+                            name
+                        );
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+                    alert(
+                        error.message
+                    );
+
+                }
+
+            }
+        );
+
+}
 
 
 /* =========================================================
@@ -863,9 +928,7 @@ async function createRoom(
     );
 
 
-    openRoom(
-        code
-    );
+    openRoom(code);
 
 }
 
@@ -949,9 +1012,7 @@ async function joinRoom(
     );
 
 
-    openRoom(
-        code
-    );
+    openRoom(code);
 
 }
 
@@ -966,6 +1027,16 @@ function openRoom(
 
     currentRoomId =
         code;
+
+
+    activeScreen = "";
+
+
+    lastRenderedRoomState =
+        "";
+
+
+    selectedClueCards.clear();
 
 
     if ($("roomCode"))
@@ -1002,6 +1073,9 @@ function listenToRoom() {
 
         roomListener();
 
+        roomListener =
+            null;
+
     }
 
 
@@ -1012,6 +1086,11 @@ function listenToRoom() {
                 "rooms",
                 currentRoomId
             ),
+
+            {
+                includeMetadataChanges:
+                    false
+            },
 
             snapshot => {
 
@@ -1032,95 +1111,40 @@ function listenToRoom() {
                 }
 
 
-                /*
-                   Update room immediately.
-                   This listener controls game state.
-                */
-
                 currentRoom =
                     snapshot.data();
 
 
-                console.log(
-                    "ROOM UPDATE:",
-                    currentRoom.status,
-                    currentRoom.phase,
-                    currentRoom.clue
-                );
+                if ($("gameRoomCode")) {
 
-
-                /*
-                   GAME STARTED
-                */
-
-                if (
-                    currentRoom.status ===
-                    "playing"
-                ) {
-
-                    if (
-                        !currentPlayer
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    showScreen(
-                        "gameScreen"
-                    );
-
-
-                    renderGameBoard();
-
-
-                    return;
+                    $("gameRoomCode")
+                        .textContent =
+                            currentRoomId;
 
                 }
 
 
-                /*
-                   GAME FINISHED
-                */
-
                 if (
+                    currentRoom.status ===
+                    "playing" ||
+
                     currentRoom.status ===
                     "finished"
                 ) {
 
-                    if (
-                        !currentPlayer
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    showScreen(
-                        "gameScreen"
-                    );
-
-
-                    renderGameBoard();
-
-
-                    return;
+                    openGame();
 
                 }
 
+                else {
 
-                /*
-                   LOBBY
-                */
+                    showScreen(
+                        "lobbyScreen"
+                    );
 
-                showScreen(
-                    "lobbyScreen"
-                );
+                    updateLobby();
 
-
-                updateLobby();
+                }
 
             },
 
@@ -1149,6 +1173,9 @@ function listenToPlayers() {
 
         playersListener();
 
+        playersListener =
+            null;
+
     }
 
 
@@ -1164,6 +1191,11 @@ function listenToPlayers() {
     playersListener =
         onSnapshot(
             playersRef,
+
+            {
+                includeMetadataChanges:
+                    false
+            },
 
             snapshot => {
 
@@ -1185,20 +1217,29 @@ function listenToPlayers() {
                         player =>
                             player.id ===
                             currentUser.uid
-                    );
+                    ) || null;
 
 
-                /*
-                   IMPORTANT:
-                   This listener ONLY updates
-                   player/lobby information.
+                if (
+                    currentRoom &&
+                    (
+                        currentRoom.status ===
+                        "playing" ||
 
-                   It does NOT redraw the game.
-                   This prevents unnecessary delay
-                   when the Spymaster sends a clue.
-                */
+                        currentRoom.status ===
+                        "finished"
+                    )
+                ) {
 
-                updateLobby();
+                    renderGameBoard();
+
+                }
+
+                else {
+
+                    updateLobby();
+
+                }
 
             },
 
@@ -1259,32 +1300,52 @@ function updateLobby() {
     );
 
 
-    $("chooseBlueButton")?.classList.toggle(
-        "selected",
-        currentPlayer.team ===
-            "blue"
-    );
+    if ($("chooseBlueButton")) {
+
+        $("chooseBlueButton")
+            .classList.toggle(
+                "selected",
+                currentPlayer.team ===
+                    "blue"
+            );
+
+    }
 
 
-    $("chooseRedButton")?.classList.toggle(
-        "selected",
-        currentPlayer.team ===
-            "red"
-    );
+    if ($("chooseRedButton")) {
+
+        $("chooseRedButton")
+            .classList.toggle(
+                "selected",
+                currentPlayer.team ===
+                    "red"
+            );
+
+    }
 
 
-    $("chooseSpyButton")?.classList.toggle(
-        "selected",
-        currentPlayer.role ===
-            "spymaster"
-    );
+    if ($("chooseSpyButton")) {
+
+        $("chooseSpyButton")
+            .classList.toggle(
+                "selected",
+                currentPlayer.role ===
+                    "spymaster"
+            );
+
+    }
 
 
-    $("chooseOperativeButton")?.classList.toggle(
-        "selected",
-        currentPlayer.role ===
-            "operative"
-    );
+    if ($("chooseOperativeButton")) {
+
+        $("chooseOperativeButton")
+            .classList.toggle(
+                "selected",
+                currentPlayer.role ===
+                    "operative"
+            );
+
+    }
 
 
     const isHost =
@@ -1292,16 +1353,26 @@ function updateLobby() {
         currentUser.uid;
 
 
-    $("hostControls")?.classList.toggle(
-        "hidden",
-        !isHost
-    );
+    if ($("hostControls")) {
+
+        $("hostControls")
+            .classList.toggle(
+                "hidden",
+                !isHost
+            );
+
+    }
 
 
-    $("waitingText")?.classList.toggle(
-        "hidden",
-        isHost
-    );
+    if ($("waitingText")) {
+
+        $("waitingText")
+            .classList.toggle(
+                "hidden",
+                isHost
+            );
+
+    }
 
 
     if (
@@ -1309,9 +1380,10 @@ function updateLobby() {
         $("startGameButton")
     ) {
 
-        $("startGameButton").disabled =
-            !currentPlayer.team ||
-            !currentPlayer.role;
+        $("startGameButton")
+            .disabled =
+                !currentPlayer.team ||
+                !currentPlayer.role;
 
     }
 
@@ -1328,9 +1400,7 @@ function renderPlayerList(
     container
 ) {
 
-    if (
-        !container
-    ) {
+    if (!container) {
 
         return;
 
@@ -1342,6 +1412,7 @@ function renderPlayerList(
             player =>
                 player.team ===
                     team &&
+
                 player.role ===
                     role
         );
@@ -1367,8 +1438,7 @@ function renderPlayerList(
 
 
         empty.textContent =
-            currentLanguage ===
-                "ar"
+            currentLanguage === "ar"
                 ? "فارغ"
                 : "Empty";
 
@@ -1423,21 +1493,31 @@ function renderPlayerList(
 
 
 /* =========================================================
-   TEAM
+   TEAM BUTTONS
 ========================================================= */
 
-$("chooseBlueButton")?.addEventListener(
-    "click",
-    () =>
-        chooseTeam("blue")
-);
+if ($("chooseBlueButton")) {
+
+    $("chooseBlueButton")
+        .addEventListener(
+            "click",
+            () =>
+                chooseTeam("blue")
+        );
+
+}
 
 
-$("chooseRedButton")?.addEventListener(
-    "click",
-    () =>
-        chooseTeam("red")
-);
+if ($("chooseRedButton")) {
+
+    $("chooseRedButton")
+        .addEventListener(
+            "click",
+            () =>
+                chooseTeam("red")
+        );
+
+}
 
 
 async function chooseTeam(
@@ -1453,18 +1533,6 @@ async function chooseTeam(
     }
 
 
-    /*
-       If the player changes team,
-       reset their role.
-    */
-
-    const role =
-        currentPlayer.team ===
-        team
-            ? currentPlayer.role
-            : null;
-
-
     await updateDoc(
         doc(
             db,
@@ -1475,9 +1543,7 @@ async function chooseTeam(
         ),
         {
 
-            team,
-
-            role
+            team
 
         }
     );
@@ -1486,25 +1552,35 @@ async function chooseTeam(
 
 
 /* =========================================================
-   ROLE
+   ROLE BUTTONS
 ========================================================= */
 
-$("chooseSpyButton")?.addEventListener(
-    "click",
-    () =>
-        chooseRole(
-            "spymaster"
-        )
-);
+if ($("chooseSpyButton")) {
+
+    $("chooseSpyButton")
+        .addEventListener(
+            "click",
+            () =>
+                chooseRole(
+                    "spymaster"
+                )
+        );
+
+}
 
 
-$("chooseOperativeButton")?.addEventListener(
-    "click",
-    () =>
-        chooseRole(
-            "operative"
-        )
-);
+if ($("chooseOperativeButton")) {
+
+    $("chooseOperativeButton")
+        .addEventListener(
+            "click",
+            () =>
+                chooseRole(
+                    "operative"
+                )
+        );
+
+}
 
 
 async function chooseRole(
@@ -1512,12 +1588,12 @@ async function chooseRole(
 ) {
 
     if (
-        !currentPlayer?.team
+        !currentPlayer ||
+        !currentPlayer.team
     ) {
 
         alert(
-            currentLanguage ===
-                "ar"
+            currentLanguage === "ar"
                 ? "اختر الفريق أولًا."
                 : "Choose a team first."
         );
@@ -1528,7 +1604,7 @@ async function chooseRole(
 
 
     /*
-       One Spymaster per team.
+       Only one Spymaster per team.
     */
 
     if (
@@ -1539,6 +1615,7 @@ async function chooseRole(
         const taken =
             players.some(
                 player =>
+
                     player.team ===
                         currentPlayer.team &&
 
@@ -1550,13 +1627,10 @@ async function chooseRole(
             );
 
 
-        if (
-            taken
-        ) {
+        if (taken) {
 
             alert(
-                currentLanguage ===
-                    "ar"
+                currentLanguage === "ar"
                     ? "هذا الفريق لديه سبايماستر بالفعل."
                     : "This team already has a Spymaster."
             );
@@ -1590,27 +1664,23 @@ async function chooseRole(
    START GAME
 ========================================================= */
 
-$("startGameButton")?.addEventListener(
-    "click",
-    startGame
-);
+if ($("startGameButton")) {
+
+    $("startGameButton")
+        .addEventListener(
+            "click",
+            startGame
+        );
+
+}
 
 
 async function startGame() {
 
     if (
         !currentRoom ||
-        !currentPlayer
-    ) {
-
-        return;
-
-    }
-
-
-    if (
         currentRoom.hostId !==
-        currentUser.uid
+            currentUser.uid
     ) {
 
         return;
@@ -1619,6 +1689,7 @@ async function startGame() {
 
 
     if (
+        !currentPlayer ||
         !currentPlayer.team ||
         !currentPlayer.role
     ) {
@@ -1635,13 +1706,16 @@ async function startGame() {
 
 
     /*
-       25 random words
+    ---------------------------------------------------------
+    CREATE WORDS
+    ---------------------------------------------------------
     */
 
     const selectedWords =
         shuffle(
             words[
-                currentRoom.language
+                currentRoom.language ||
+                currentLanguage
             ]
         ).slice(
             0,
@@ -1650,35 +1724,48 @@ async function startGame() {
 
 
     /*
-       Starting team
+    ---------------------------------------------------------
+    STARTING TEAM
+    ---------------------------------------------------------
     */
 
     const startingTeam =
-        Math.random() <
-        0.5
+        Math.random() < 0.5
             ? "blue"
             : "red";
 
 
     /*
-       Codenames distribution
+    ---------------------------------------------------------
+    CARD TYPES
+    ---------------------------------------------------------
+
+    Starting team:
+        9 cards
+
+    Other team:
+        8 cards
+
+    Neutral:
+        7 cards
+
+    Assassin:
+        1 card
     */
 
+    const types = [];
+
+
     const blueCount =
-        startingTeam ===
-        "blue"
+        startingTeam === "blue"
             ? 9
             : 8;
 
 
     const redCount =
-        startingTeam ===
-        "red"
+        startingTeam === "red"
             ? 9
             : 8;
-
-
-    const types = [];
 
 
     for (
@@ -1731,10 +1818,7 @@ async function startGame() {
 
     const cards =
         selectedWords.map(
-            (
-                word,
-                index
-            ) => ({
+            (word, index) => ({
 
                 id:
                     index,
@@ -1751,13 +1835,6 @@ async function startGame() {
         );
 
 
-    /*
-       ONE FIRESTORE UPDATE.
-
-       All clients listening to the room
-       receive the new game state.
-    */
-
     await updateDoc(
         doc(
             db,
@@ -1770,6 +1847,9 @@ async function startGame() {
                 "playing",
 
             cards,
+
+            words:
+                selectedWords,
 
             round:
                 1,
@@ -1796,9 +1876,6 @@ async function startGame() {
             clueNumber:
                 0,
 
-            remainingGuesses:
-                0,
-
             winner:
                 null
 
@@ -1809,12 +1886,51 @@ async function startGame() {
 
 
 /* =========================================================
+   OPEN GAME
+========================================================= */
+
+function openGame() {
+
+    if (
+        !currentRoom
+    ) {
+
+        return;
+
+    }
+
+
+    showScreen(
+        "gameScreen"
+    );
+
+
+    /*
+       IMPORTANT:
+       Do NOT clear selectedClueCards here.
+
+       The room listener may receive several updates
+       while the Spymaster is selecting cards.
+    */
+
+
+    renderGameBoard();
+
+}
+
+
+/* =========================================================
    GAME BOARD
 ========================================================= */
 
 function renderGameBoard() {
 
+    const gameScreen =
+        $("gameScreen");
+
+
     if (
+        !gameScreen ||
         !currentRoom ||
         !currentRoom.cards ||
         !currentPlayer
@@ -1825,12 +1941,64 @@ function renderGameBoard() {
     }
 
 
-    const gameScreen =
-        $("gameScreen");
+    /*
+    ---------------------------------------------------------
+    STATE KEY
+    ---------------------------------------------------------
 
+    Prevents unnecessary full redraws.
+
+    We include selectedClueCards because
+    those are local UI changes.
+    */
+
+    const stateKey =
+        JSON.stringify({
+
+            status:
+                currentRoom.status,
+
+            phase:
+                currentRoom.phase,
+
+            currentTeam:
+                currentRoom.currentTeam,
+
+            clue:
+                currentRoom.clue,
+
+            clueNumber:
+                currentRoom.clueNumber,
+
+            cards:
+                currentRoom.cards,
+
+            scores:
+                currentRoom.scores,
+
+            winner:
+                currentRoom.winner,
+
+            playerRole:
+                currentPlayer.role,
+
+            playerTeam:
+                currentPlayer.team,
+
+            selectedClueCards:
+                [...selectedClueCards].sort()
+
+        });
+
+
+    /*
+       Nothing changed.
+       Don't redraw the whole game.
+    */
 
     if (
-        !gameScreen
+        stateKey ===
+        lastRenderedRoomState
     ) {
 
         return;
@@ -1838,22 +2006,62 @@ function renderGameBoard() {
     }
 
 
-    /*
-       Rebuild game only when ROOM changes.
-       Player listener no longer triggers this.
-    */
+    lastRenderedRoomState =
+        stateKey;
+
 
     gameScreen.innerHTML =
         "";
 
 
-    /* =====================================================
-       HEADER
-    ===================================================== */
+    renderGameHeader(
+        gameScreen
+    );
+
+
+    renderTurnMessage(
+        gameScreen
+    );
+
+
+    renderClue(
+        gameScreen
+    );
+
+
+    renderBoard(
+        gameScreen
+    );
+
+
+    renderControls(
+        gameScreen
+    );
+
+
+    renderScores(
+        gameScreen
+    );
+
+
+    renderGameOver(
+        gameScreen
+    );
+
+}
+
+
+/* =========================================================
+   GAME HEADER
+========================================================= */
+
+function renderGameHeader(
+    gameScreen
+) {
 
     const header =
         document.createElement(
-            "header"
+            "div"
         );
 
 
@@ -1861,18 +2069,14 @@ function renderGameBoard() {
         "game-header";
 
 
-    const brand =
+    const title =
         document.createElement(
-            "div"
+            "h1"
         );
 
 
-    brand.className =
-        "game-brand";
-
-
-    brand.innerHTML =
-        `DEV<span>Clue</span>`;
+    title.textContent =
+        "DEVClue";
 
 
     const room =
@@ -1887,8 +2091,7 @@ function renderGameBoard() {
 
     room.innerHTML =
         `
-        <span>Room</span>
-
+        Room
         <strong>
             ${currentRoomId}
         </strong>
@@ -1902,47 +2105,24 @@ function renderGameBoard() {
 
 
     round.className =
-        "round-info";
+        "game-round";
 
 
-    const teamLabel =
-        currentRoom.currentTeam ===
-        "blue"
-            ? (
-                currentLanguage === "ar"
-                    ? "الفريق الأزرق"
-                    : "Team Blue"
-            )
-            : (
-                currentLanguage === "ar"
-                    ? "الفريق الأحمر"
-                    : "Team Red"
-            );
-
-
-    round.innerHTML =
-        `
-        <span>
-            ${
-                currentLanguage === "ar"
-                    ? `الجولة ${currentRoom.round || 1}`
-                    : `Round ${currentRoom.round || 1}`
-            }
-        </span>
-
-        <span class="turn-label">
-            ${teamLabel}
-        </span>
-        `;
+    round.textContent =
+        currentLanguage === "ar"
+            ? `الجولة ${currentRoom.round || 1}`
+            : `Round ${currentRoom.round || 1}`;
 
 
     header.appendChild(
-        brand
+        title
     );
+
 
     header.appendChild(
         room
     );
+
 
     header.appendChild(
         round
@@ -1953,147 +2133,92 @@ function renderGameBoard() {
         header
     );
 
+}
 
-    /* =====================================================
-       TOP BAR
-    ===================================================== */
 
-    const topBar =
+/* =========================================================
+   TURN MESSAGE
+========================================================= */
+
+function renderTurnMessage(
+    gameScreen
+) {
+
+    const turn =
         document.createElement(
             "div"
         );
 
 
-    topBar.className =
-        "game-topbar";
+    turn.className =
+        "game-turn";
 
 
-    const titleBox =
-        document.createElement(
-            "div"
-        );
+    const currentTeam =
+        currentRoom.currentTeam;
 
 
-    const role =
-        document.createElement(
-            "span"
-        );
+    const teamName =
+        currentTeam === "blue"
 
-
-    role.className =
-        "role-small";
-
-
-    role.textContent =
-        currentPlayer.role ===
-        "spymaster"
-            ? "SPYMASTER"
-            : "OPERATIVES";
-
-
-    const title =
-        document.createElement(
-            "h2"
-        );
-
-
-    title.textContent =
-        currentPlayer.team ===
-        "blue"
             ? (
                 currentLanguage === "ar"
-                    ? "الفريق الأزرق"
-                    : "Team Blue"
+                    ? "الأزرق"
+                    : "Blue"
             )
+
             : (
                 currentLanguage === "ar"
-                    ? "الفريق الأحمر"
-                    : "Team Red"
+                    ? "الأحمر"
+                    : "Red"
             );
 
 
-    titleBox.appendChild(
-        role
-    );
-
-    titleBox.appendChild(
-        title
-    );
-
-
-    const scores =
-        document.createElement(
-            "div"
-        );
-
-
-    scores.className =
-        "score-board";
-
-
-    scores.innerHTML =
-        `
-        <div class="score blue-score">
-
-            <span>BLUE</span>
-
-            <strong>
-                ${currentRoom.scores?.blue || 0}
-            </strong>
-
-        </div>
-
-        <div class="score red-score">
-
-            <span>RED</span>
-
-            <strong>
-                ${currentRoom.scores?.red || 0}
-            </strong>
-
-        </div>
-        `;
-
-
-    topBar.appendChild(
-        titleBox
-    );
-
-    topBar.appendChild(
-        scores
-    );
-
-
-    gameScreen.appendChild(
-        topBar
-    );
-
-
-    /* =====================================================
-       INSTRUCTION
-    ===================================================== */
-
-    const instruction =
-        document.createElement(
-            "div"
-        );
-
-
-    instruction.className =
-        "instruction";
-
+    /*
+    ---------------------------------------------------------
+    GAME OVER
+    ---------------------------------------------------------
+    */
 
     if (
         currentRoom.status ===
         "finished"
     ) {
 
-        instruction.textContent =
+        turn.textContent =
             currentLanguage === "ar"
                 ? "انتهت اللعبة 🏆"
                 : "Game Over 🏆";
 
     }
+
+
+    /*
+    ---------------------------------------------------------
+    OTHER TEAM
+    ---------------------------------------------------------
+    */
+
+    else if (
+        currentPlayer.team !==
+        currentTeam
+    ) {
+
+        turn.textContent =
+            currentLanguage === "ar"
+
+                ? `⏳ بانتظار الفريق ${teamName}`
+
+                : `⏳ Waiting for ${teamName} Team`;
+
+    }
+
+
+    /*
+    ---------------------------------------------------------
+    MY TEAM - CLUE
+    ---------------------------------------------------------
+    */
 
     else if (
         currentRoom.phase ===
@@ -2102,51 +2227,62 @@ function renderGameBoard() {
 
         if (
             currentPlayer.role ===
-            "spymaster" &&
-            currentPlayer.team ===
-            currentRoom.currentTeam
+            "spymaster"
         ) {
 
-            instruction.textContent =
+            turn.textContent =
                 currentLanguage === "ar"
-                    ? "حدد الكلمات ثم أعطِ التلميح 💡"
-                    : "Select the words and give a clue 💡";
+
+                    ? "دور فريقك — اختر الكروت وأعطِ التلميح"
+
+                    : "Your team's turn — Select cards and give a clue";
 
         }
 
         else {
 
-            instruction.textContent =
+            turn.textContent =
                 currentLanguage === "ar"
-                    ? "بانتظار التلميح..."
-                    : "Waiting for the clue...";
+
+                    ? "دور فريقك — بانتظار التلميح"
+
+                    : "Your team's turn — Waiting for the clue";
 
         }
 
     }
 
+
+    /*
+    ---------------------------------------------------------
+    MY TEAM - GUESSING
+    ---------------------------------------------------------
+    */
+
     else {
 
         if (
             currentPlayer.role ===
-            "operative" &&
-            currentPlayer.team ===
-            currentRoom.currentTeam
+            "operative"
         ) {
 
-            instruction.textContent =
+            turn.textContent =
                 currentLanguage === "ar"
-                    ? `اختر كلمة — متبقي ${currentRoom.remainingGuesses} تخمين`
-                    : `Choose a card — ${currentRoom.remainingGuesses} guesses left`;
+
+                    ? "دور فريقك — اختر الكروت"
+
+                    : "Your team's turn — Choose the cards";
 
         }
 
         else {
 
-            instruction.textContent =
+            turn.textContent =
                 currentLanguage === "ar"
-                    ? "بانتظار تخمين الفريق..."
-                    : "Waiting for the team to guess...";
+
+                    ? "فريقك يخمّن الآن"
+
+                    : "Your team is guessing";
 
         }
 
@@ -2154,67 +2290,84 @@ function renderGameBoard() {
 
 
     gameScreen.appendChild(
-        instruction
+        turn
     );
 
+}
 
-    /* =====================================================
-       CURRENT CLUE
-    ===================================================== */
+
+/* =========================================================
+   CLUE DISPLAY
+========================================================= */
+
+function renderClue(
+    gameScreen
+) {
 
     if (
-        currentRoom.clue
+        !currentRoom.clue
     ) {
 
-        const clueBox =
-            document.createElement(
-                "div"
-            );
-
-
-        clueBox.className =
-            "current-clue";
-
-
-        clueBox.innerHTML =
-            `
-            <span>
-                ${
-                    currentLanguage === "ar"
-                        ? "التلميح"
-                        : "CLUE"
-                }
-            </span>
-
-            <strong>
-                ${currentRoom.clue}
-            </strong>
-
-            <strong>
-                ${currentRoom.clueNumber}
-            </strong>
-            `;
-
-
-        gameScreen.appendChild(
-            clueBox
-        );
+        return;
 
     }
 
 
-    /* =====================================================
-       CARDS
-    ===================================================== */
+    const clueBox =
+        document.createElement(
+            "div"
+        );
+
+
+    clueBox.className =
+        "current-clue";
+
+
+    clueBox.innerHTML =
+        `
+        <span>
+            ${
+                currentLanguage === "ar"
+                    ? "التلميح"
+                    : "CLUE"
+            }
+        </span>
+
+        <strong>
+            ${escapeHtml(
+                currentRoom.clue
+            )}
+        </strong>
+
+        <b>
+            ${currentRoom.clueNumber || 0}
+        </b>
+        `;
+
+
+    gameScreen.appendChild(
+        clueBox
+    );
+
+}
+
+
+/* =========================================================
+   BOARD
+========================================================= */
+
+function renderBoard(
+    gameScreen
+) {
 
     const board =
         document.createElement(
-            "section"
+            "div"
         );
 
 
     board.className =
-        "cards-container";
+        "game-board";
 
 
     currentRoom.cards.forEach(
@@ -2227,202 +2380,98 @@ function renderGameBoard() {
 
 
             card.className =
-                "card";
+                "word-card";
 
 
-            card.type =
-                "button";
-
-
-            card.textContent =
-                cardData.word;
-
-
-            const isSpymaster =
-                currentPlayer.role ===
-                "spymaster";
-
-
-            const isMyTurn =
-                currentPlayer.team ===
-                currentRoom.currentTeam;
+            card.dataset.id =
+                cardData.id;
 
 
             /*
-               REVEALED CARD
+            -------------------------------------------------
+            REVEALED
+            -------------------------------------------------
             */
 
             if (
                 cardData.revealed
             ) {
 
-                if (
-                    cardData.type ===
-                    "blue"
-                ) {
+                renderRevealedCard(
+                    card,
+                    cardData
+                );
 
-                    card.classList.add(
-                        "team-blue"
-                    );
+            }
 
-                }
+            else {
 
-                else if (
-                    cardData.type ===
-                    "red"
-                ) {
-
-                    card.classList.add(
-                        "team-red"
-                    );
-
-                }
-
-                else if (
-                    cardData.type ===
-                    "neutral"
-                ) {
-
-                    card.classList.add(
-                        "neutral"
-                    );
-
-                }
-
-                else if (
-                    cardData.type ===
-                    "assassin"
-                ) {
-
-                    card.classList.add(
-                        "danger"
-                    );
-
-                }
+                card.textContent =
+                    cardData.word;
 
             }
 
 
             /*
-               SPYMASTER SECRET MAP
+            -------------------------------------------------
+            SPYMASTER COLORS
+            -------------------------------------------------
             */
+
+            const isSpymaster =
+                currentPlayer.role ===
+                "spymaster";
+
 
             if (
                 isSpymaster &&
                 !cardData.revealed
             ) {
 
-                if (
-                    cardData.type ===
-                    "blue"
-                ) {
-
-                    card.classList.add(
-                        "team-blue"
-                    );
-
-                }
-
-                else if (
-                    cardData.type ===
-                    "red"
-                ) {
-
-                    card.classList.add(
-                        "team-red"
-                    );
-
-                }
-
-                else if (
-                    cardData.type ===
-                    "neutral"
-                ) {
-
-                    card.classList.add(
-                        "neutral"
-                    );
-
-                }
-
-                else if (
-                    cardData.type ===
-                    "assassin"
-                ) {
-
-                    card.classList.add(
-                        "danger"
-                    );
-
-                }
+                card.classList.add(
+                    `spy-${cardData.type}`
+                );
 
             }
 
 
             /*
-               SPYMASTER SELECTED CARD
+            -------------------------------------------------
+            SELECTED CLUE TARGET
+            -------------------------------------------------
             */
 
             if (
                 selectedClueCards.has(
-                    String(cardData.id)
+                    String(
+                        cardData.id
+                    )
                 )
             ) {
 
                 card.classList.add(
-                    "pending"
+                    "clue-target"
                 );
 
             }
 
 
             /*
-               SPYMASTER CLICK
+            -------------------------------------------------
+            CARD CLICK
+            -------------------------------------------------
             */
 
-            const canSpymasterSelect =
-                isSpymaster &&
-                isMyTurn &&
-                currentRoom.phase ===
-                    "clue" &&
-                !cardData.revealed;
+            card.addEventListener(
+                "click",
+                () => {
 
+                    handleCardClick(
+                        cardData
+                    );
 
-            /*
-               OPERATIVE CLICK
-            */
-
-            const canOperativeGuess =
-                currentPlayer.role ===
-                    "operative" &&
-                isMyTurn &&
-                currentRoom.phase ===
-                    "guessing" &&
-                !cardData.revealed;
-
-
-            if (
-                canSpymasterSelect ||
-                canOperativeGuess
-            ) {
-
-                card.classList.add(
-                    "operative-card"
-                );
-
-
-                card.addEventListener(
-                    "click",
-                    () => {
-
-                        handleCardClick(
-                            cardData
-                        );
-
-                    }
-                );
-
-            }
+                }
+            );
 
 
             board.appendChild(
@@ -2437,39 +2486,81 @@ function renderGameBoard() {
         board
     );
 
+}
 
-    /* =====================================================
-       CONTROLS
-    ===================================================== */
 
-    renderGameControls(
-        gameScreen
+/* =========================================================
+   REVEALED CARD
+========================================================= */
+
+function renderRevealedCard(
+    card,
+    cardData
+) {
+
+    card.classList.add(
+        "revealed"
     );
 
 
-    /* =====================================================
-       GAME OVER
-    ===================================================== */
+    card.classList.add(
+        `revealed-${cardData.type}`
+    );
 
-    if (
-        currentRoom.status ===
-        "finished"
-    ) {
 
-        renderGameOver(
-            gameScreen
+    /*
+       IMPORTANT:
+
+       The word is hidden after revealing.
+
+       Only the GDG logo is shown.
+    */
+
+    const content =
+        document.createElement(
+            "div"
         );
 
-    }
+
+    content.className =
+        "revealed-card-content";
+
+
+    const logo =
+        document.createElement(
+            "img"
+        );
+
+
+    logo.src =
+        "Optional Logo - GDGs Stacked - Light.png";
+
+
+    logo.alt =
+        "GDG";
+
+
+    content.appendChild(
+        logo
+    );
+
+
+    card.innerHTML =
+        "";
+
+
+    card.appendChild(
+        content
+    );
 
 }
 
 
 /* =========================================================
-   GAME CONTROLS
+   CONTROLS
 ========================================================= */
 
-function renderGameControls(
+function renderControls(
     gameScreen
 ) {
 
@@ -2482,13 +2573,25 @@ function renderGameControls(
     }
 
 
+    const controls =
+        document.createElement(
+            "div"
+        );
+
+
+    controls.className =
+        "game-controls";
+
+
     const isMyTeam =
         currentPlayer.team ===
         currentRoom.currentTeam;
 
 
     /*
-       SPYMASTER
+    ---------------------------------------------------------
+    SPYMASTER
+    ---------------------------------------------------------
     */
 
     if (
@@ -2498,96 +2601,19 @@ function renderGameControls(
         isMyTeam &&
 
         currentRoom.phase ===
-            "clue"
+            "clue" &&
+
+        currentRoom.status ===
+            "playing"
     ) {
 
-        const panel =
-            document.createElement(
-                "div"
-            );
-
-
-        panel.className =
-            "clue-panel";
-
-
-        const selectedCount =
-            selectedClueCards.size;
-
-
-        panel.innerHTML =
-            `
-            <label>
-                ${
-                    currentLanguage === "ar"
-                        ? "تلميحك"
-                        : "Your Clue"
-                }
-            </label>
-
-            <div class="clue-input-row">
-
-                <input
-                    id="clueInput"
-                    type="text"
-                    maxlength="30"
-                    placeholder="${
-                        currentLanguage === "ar"
-                            ? "اكتب التلميح..."
-                            : "Enter your clue..."
-                    }"
-                >
-
-                <input
-                    id="clueNumber"
-                    type="number"
-                    min="1"
-                    max="9"
-                    value="${
-                        selectedCount > 0
-                            ? selectedCount
-                            : 1
-                    }"
-                >
-
-                <button
-                    id="giveClueButton"
-                    class="primary-button"
-                >
-                    ${
-                        currentLanguage === "ar"
-                            ? "إعطاء التلميح"
-                            : "Give Clue"
-                    }
-                </button>
-
-            </div>
-
-            <p
-                style="
-                    margin-top:10px;
-                    text-align:center;
-                    color:#5f6368;
-                    font-size:13px;
-                "
-            >
-                ${
-                    currentLanguage === "ar"
-                        ? `الكلمات المحددة: ${selectedCount}`
-                        : `Selected words: ${selectedCount}`
-                }
-            </p>
-            `;
-
-
-        gameScreen.appendChild(
-            panel
+        renderSpymasterControls(
+            controls
         );
 
 
-        $("giveClueButton")?.addEventListener(
-            "click",
-            giveClue
+        gameScreen.appendChild(
+            controls
         );
 
 
@@ -2597,12 +2623,48 @@ function renderGameControls(
 
 
     /*
-       OPERATIVE
+    ---------------------------------------------------------
+    OPERATIVE
+    ---------------------------------------------------------
     */
 
     if (
+        currentPlayer.role ===
+            "operative" &&
+
+        isMyTeam &&
+
         currentRoom.phase ===
-        "guessing"
+            "guessing" &&
+
+        currentRoom.status ===
+            "playing"
+    ) {
+
+        renderOperativeControls(
+            controls
+        );
+
+
+        gameScreen.appendChild(
+            controls
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+    ---------------------------------------------------------
+    WAITING
+    ---------------------------------------------------------
+    */
+
+    if (
+        currentRoom.status ===
+        "playing"
     ) {
 
         const message =
@@ -2612,38 +2674,223 @@ function renderGameControls(
 
 
         message.className =
-            "instruction";
+            "guess-info";
 
 
         if (
-            currentPlayer.role ===
-                "operative" &&
+            currentRoom.currentTeam !==
+            currentPlayer.team
+        ) {
 
-            isMyTeam
+            const teamName =
+                currentRoom.currentTeam ===
+                    "blue"
+
+                    ? (
+                        currentLanguage === "ar"
+                            ? "الأزرق"
+                            : "Blue"
+                    )
+
+                    : (
+                        currentLanguage === "ar"
+                            ? "الأحمر"
+                            : "Red"
+                    );
+
+
+            message.textContent =
+                currentLanguage === "ar"
+
+                    ? `⏳ بانتظار الفريق ${teamName}`
+
+                    : `⏳ Waiting for ${teamName} Team`;
+
+        }
+
+
+        else if (
+            currentRoom.phase ===
+            "clue"
         ) {
 
             message.textContent =
                 currentLanguage === "ar"
-                    ? "اختر كلمة من الكلمات 👆"
-                    : "Choose a card 👆";
+
+                    ? "⏳ بانتظار السبايماستر..."
+
+                    : "⏳ Waiting for the Spymaster...";
 
         }
+
 
         else {
 
             message.textContent =
                 currentLanguage === "ar"
-                    ? "بانتظار الفريق..."
-                    : "Waiting for the team...";
+
+                    ? "⏳ بانتظار الفريق..."
+
+                    : "⏳ Waiting for the team...";
 
         }
 
 
-        gameScreen.appendChild(
+        controls.appendChild(
             message
         );
 
+
+        gameScreen.appendChild(
+            controls
+        );
+
     }
+
+}
+
+
+/* =========================================================
+   SPYMASTER CONTROLS
+========================================================= */
+
+function renderSpymasterControls(
+    controls
+) {
+
+    const selectedCount =
+        selectedClueCards.size;
+
+
+    controls.innerHTML =
+        `
+        <div class="clue-selection-info">
+
+            ${
+                currentLanguage === "ar"
+
+                    ? `الكروت المحددة: ${selectedCount}`
+
+                    : `Selected cards: ${selectedCount}`
+
+            }
+
+        </div>
+
+        <div class="clue-form">
+
+            <input
+                id="clueInput"
+                type="text"
+                maxlength="30"
+                placeholder="${
+                    currentLanguage === "ar"
+                        ? "اكتب التلميح..."
+                        : "Enter your clue..."
+                }"
+            >
+
+            <input
+                id="clueNumberInput"
+                type="number"
+                min="1"
+                max="25"
+                value="${selectedCount}"
+                readonly
+            >
+
+            <button
+                id="giveClueButton"
+                class="primary-game-button"
+                ${
+                    selectedCount === 0
+                        ? "disabled"
+                        : ""
+                }
+            >
+                ${
+                    currentLanguage === "ar"
+                        ? "💡 إعطاء التلميح"
+                        : "💡 Give Clue"
+                }
+            </button>
+
+        </div>
+        `;
+
+
+    const giveButton =
+        $("giveClueButton");
+
+
+    if (giveButton) {
+
+        giveButton.addEventListener(
+            "click",
+            giveClue
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   OPERATIVE CONTROLS
+========================================================= */
+
+function renderOperativeControls(
+    controls
+) {
+
+    const message =
+        document.createElement(
+            "div"
+        );
+
+
+    message.className =
+        "guess-info";
+
+
+    message.textContent =
+        currentLanguage === "ar"
+
+            ? "اختار أي عدد من الكروت، واضغط إنهاء الدور عندما تخلص."
+
+            : "Choose as many cards as you want, then end your turn when you're done.";
+
+
+    controls.appendChild(
+        message
+    );
+
+
+    const endButton =
+        document.createElement(
+            "button"
+        );
+
+
+    endButton.className =
+        "end-turn-button";
+
+
+    endButton.textContent =
+        currentLanguage === "ar"
+            ? "إنهاء الدور"
+            : "End Turn";
+
+
+    endButton.addEventListener(
+        "click",
+        endTurnManually
+    );
+
+
+    controls.appendChild(
+        endButton
+    );
 
 }
 
@@ -2667,7 +2914,9 @@ function handleCardClick(
 
 
     /*
-       SPYMASTER
+    ---------------------------------------------------------
+    SPYMASTER SELECT
+    ---------------------------------------------------------
     */
 
     if (
@@ -2679,6 +2928,9 @@ function handleCardClick(
 
         currentRoom.phase ===
             "clue" &&
+
+        currentRoom.status ===
+            "playing" &&
 
         !cardData.revealed
     ) {
@@ -2718,7 +2970,9 @@ function handleCardClick(
 
 
     /*
-       OPERATIVE
+    ---------------------------------------------------------
+    OPERATIVE
+    ---------------------------------------------------------
     */
 
     if (
@@ -2752,6 +3006,16 @@ function handleCardClick(
 
 
     if (
+        currentRoom.status !==
+        "playing"
+    ) {
+
+        return;
+
+    }
+
+
+    if (
         cardData.revealed
     ) {
 
@@ -2777,14 +3041,7 @@ async function giveClue() {
         $("clueInput");
 
 
-    const numberInput =
-        $("clueNumber");
-
-
-    if (
-        !input ||
-        !numberInput
-    ) {
+    if (!input) {
 
         return;
 
@@ -2795,15 +3052,11 @@ async function giveClue() {
         input.value.trim();
 
 
-    const number =
-        Number(
-            numberInput.value
-        );
+    const selectedCount =
+        selectedClueCards.size;
 
 
-    if (
-        !clue
-    ) {
+    if (!clue) {
 
         alert(
             currentLanguage === "ar"
@@ -2817,15 +3070,13 @@ async function giveClue() {
 
 
     if (
-        !number ||
-        number < 1 ||
-        number > 9
+        selectedCount === 0
     ) {
 
         alert(
             currentLanguage === "ar"
-                ? "اختر رقمًا من 1 إلى 9."
-                : "Choose a number from 1 to 9."
+                ? "اختر كرتًا واحدًا على الأقل."
+                : "Select at least one card."
         );
 
         return;
@@ -2836,7 +3087,438 @@ async function giveClue() {
     if (
         !currentPlayer ||
         currentPlayer.role !==
-            "spymaster"
+            "spymaster" ||
+        currentPlayer.team !==
+            currentRoom.currentTeam ||
+        currentRoom.phase !==
+            "clue" ||
+        currentRoom.status !==
+            "playing"
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       The clue number is automatically
+       equal to selected cards.
+    */
+
+    await updateDoc(
+        doc(
+            db,
+            "rooms",
+            currentRoomId
+        ),
+        {
+
+            clue,
+
+            clueNumber:
+                selectedCount,
+
+            phase:
+                "guessing"
+
+        }
+    );
+
+
+    selectedClueCards.clear();
+
+
+    /*
+       Clear local render cache so
+       the new phase renders immediately.
+    */
+
+    lastRenderedRoomState =
+        "";
+
+}
+
+
+/* =========================================================
+   MAKE GUESS
+========================================================= */
+
+async function makeGuess(
+    selectedCard
+) {
+
+    if (
+        !currentRoom ||
+        !currentPlayer ||
+        currentRoom.status !==
+            "playing" ||
+        currentRoom.phase !==
+            "guessing" ||
+        currentPlayer.role !==
+            "operative" ||
+        currentPlayer.team !==
+            currentRoom.currentTeam
+    ) {
+
+        return;
+
+    }
+
+
+    const roomRef =
+        doc(
+            db,
+            "rooms",
+            currentRoomId
+        );
+
+
+    try {
+
+        await runTransaction(
+            db,
+
+            async transaction => {
+
+                const snapshot =
+                    await transaction.get(
+                        roomRef
+                    );
+
+
+                if (
+                    !snapshot.exists()
+                ) {
+
+                    throw new Error(
+                        "ROOM_NOT_FOUND"
+                    );
+
+                }
+
+
+                const room =
+                    snapshot.data();
+
+
+                /*
+                ------------------------------------------------
+                VALIDATE CURRENT TURN
+                ------------------------------------------------
+                */
+
+                if (
+                    room.status !==
+                        "playing" ||
+
+                    room.phase !==
+                        "guessing" ||
+
+                    room.currentTeam !==
+                        currentPlayer.team
+                ) {
+
+                    throw new Error(
+                        "NOT_YOUR_TURN"
+                    );
+
+                }
+
+
+                const cards =
+                    [...room.cards];
+
+
+                const index =
+                    cards.findIndex(
+                        card =>
+                            String(
+                                card.id
+                            ) ===
+                            String(
+                                selectedCard.id
+                            )
+                    );
+
+
+                if (
+                    index === -1
+                ) {
+
+                    throw new Error(
+                        "CARD_NOT_FOUND"
+                    );
+
+                }
+
+
+                if (
+                    cards[index].revealed
+                ) {
+
+                    throw new Error(
+                        "CARD_ALREADY_REVEALED"
+                    );
+
+                }
+
+
+                const card =
+                    cards[index];
+
+
+                /*
+                   Reveal card.
+                */
+
+                cards[index] = {
+
+                    ...card,
+
+                    revealed:
+                        true
+
+                };
+
+
+                /*
+                ------------------------------------------------
+                ASSASSIN
+                ------------------------------------------------
+                */
+
+                if (
+                    card.type ===
+                    "assassin"
+                ) {
+
+                    const winner =
+                        room.currentTeam ===
+                            "blue"
+
+                            ? "red"
+
+                            : "blue";
+
+
+                    transaction.update(
+                        roomRef,
+                        {
+
+                            cards,
+
+                            status:
+                                "finished",
+
+                            winner
+
+                        }
+                    );
+
+
+                    return;
+
+                }
+
+
+                /*
+                ------------------------------------------------
+                CORRECT TEAM
+                ------------------------------------------------
+                */
+
+                if (
+                    card.type ===
+                    room.currentTeam
+                ) {
+
+                    const scores = {
+
+                        ...(room.scores || {
+                            blue: 0,
+                            red: 0
+                        })
+
+                    };
+
+
+                    scores[
+                        room.currentTeam
+                    ] =
+                        (
+                            scores[
+                                room.currentTeam
+                            ] || 0
+                        ) + 1;
+
+
+                    const remaining =
+                        countRemainingFromCards(
+                            cards,
+                            room.currentTeam
+                        );
+
+
+                    /*
+                    --------------------------------------------
+                    WIN
+                    --------------------------------------------
+                    */
+
+                    if (
+                        remaining === 0
+                    ) {
+
+                        transaction.update(
+                            roomRef,
+                            {
+
+                                cards,
+
+                                scores,
+
+                                status:
+                                    "finished",
+
+                                winner:
+                                    room.currentTeam
+
+                            }
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    /*
+                       Correct card:
+                       Stay in guessing phase.
+                    */
+
+                    transaction.update(
+                        roomRef,
+                        {
+
+                            cards,
+
+                            scores
+
+                        }
+                    );
+
+
+                    return;
+
+                }
+
+
+                /*
+                ------------------------------------------------
+                WRONG TEAM / NEUTRAL
+                ------------------------------------------------
+                */
+
+                const nextTeam =
+                    room.currentTeam ===
+                        "blue"
+
+                        ? "red"
+
+                        : "blue";
+
+
+                transaction.update(
+                    roomRef,
+                    {
+
+                        cards,
+
+                        currentTeam:
+                            nextTeam,
+
+                        phase:
+                            "clue",
+
+                        clue:
+                            "",
+
+                        clueNumber:
+                            0
+
+                    }
+                );
+
+            }
+        );
+
+
+        /*
+           Force local render cache reset.
+        */
+
+        lastRenderedRoomState =
+            "";
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Guess error:",
+            error
+        );
+
+
+        if (
+            error.message ===
+            "NOT_YOUR_TURN"
+        ) {
+
+            alert(
+                currentLanguage === "ar"
+                    ? "انتهى دور فريقك."
+                    : "Your team's turn has ended."
+            );
+
+        }
+
+        else if (
+            error.message ===
+            "CARD_ALREADY_REVEALED"
+        ) {
+
+            return;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   MANUAL END TURN
+========================================================= */
+
+async function endTurnManually() {
+
+    if (
+        !currentPlayer ||
+        !currentRoom
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        currentPlayer.role !==
+        "operative"
     ) {
 
         return;
@@ -2855,317 +3537,20 @@ async function giveClue() {
 
 
     if (
-        selectedClueCards.size ===
-        0
-    ) {
-
-        alert(
-            currentLanguage === "ar"
-                ? "حدد كلمة واحدة على الأقل."
-                : "Select at least one card."
-        );
-
-        return;
-
-    }
-
-
-    /*
-       One Firestore update.
-
-       This is intentionally the ONLY
-       database write needed to send
-       the clue to every player.
-    */
-
-    try {
-
-        await updateDoc(
-            doc(
-                db,
-                "rooms",
-                currentRoomId
-            ),
-            {
-
-                clue,
-
-                clueNumber:
-                    number,
-
-                remainingGuesses:
-                    number + 1,
-
-                phase:
-                    "guessing"
-
-            }
-        );
-
-
-        /*
-           Clear local selections after
-           Firestore accepts the clue.
-        */
-
-        selectedClueCards.clear();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Give clue error:",
-            error
-        );
-
-        alert(
-            currentLanguage === "ar"
-                ? "حدث خطأ أثناء إرسال التلميح."
-                : "Failed to send the clue."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   MAKE GUESS
-========================================================= */
-
-async function makeGuess(
-    selectedCard
-) {
-
-    if (
-        !currentRoom ||
-        !currentRoom.cards
+        currentRoom.phase !==
+        "guessing"
     ) {
 
         return;
 
     }
 
-
-    const cards =
-        [...currentRoom.cards];
-
-
-    const index =
-        cards.findIndex(
-            card =>
-                String(card.id) ===
-                String(
-                    selectedCard.id
-                )
-        );
-
-
-    if (
-        index === -1
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        cards[index].revealed
-    ) {
-
-        return;
-
-    }
-
-
-    cards[index] = {
-
-        ...cards[index],
-
-        revealed:
-            true
-
-    };
-
-
-    /*
-       ASSASSIN
-    */
-
-    if (
-        selectedCard.type ===
-        "assassin"
-    ) {
-
-        const winner =
-            currentRoom.currentTeam ===
-                "blue"
-                ? "red"
-                : "blue";
-
-
-        await updateDoc(
-            doc(
-                db,
-                "rooms",
-                currentRoomId
-            ),
-            {
-
-                cards,
-
-                status:
-                    "finished",
-
-                winner
-
-            }
-        );
-
-
-        return;
-
-    }
-
-
-    /*
-       CORRECT TEAM
-    */
-
-    if (
-        selectedCard.type ===
-        currentRoom.currentTeam
-    ) {
-
-        const scores = {
-
-            blue:
-                currentRoom.scores?.blue ||
-                0,
-
-            red:
-                currentRoom.scores?.red ||
-                0
-
-        };
-
-
-        scores[
-            currentRoom.currentTeam
-        ] += 1;
-
-
-        const remaining =
-            countRemainingFromCards(
-                cards,
-                currentRoom.currentTeam
-            );
-
-
-        /*
-           WIN
-        */
-
-        if (
-            remaining ===
-            0
-        ) {
-
-            await updateDoc(
-                doc(
-                    db,
-                    "rooms",
-                    currentRoomId
-                ),
-                {
-
-                    cards,
-
-                    scores,
-
-                    status:
-                        "finished",
-
-                    winner:
-                        currentRoom.currentTeam
-
-                }
-            );
-
-
-            return;
-
-        }
-
-
-        const nextGuesses =
-            (
-                currentRoom.remainingGuesses ||
-                0
-            ) - 1;
-
-
-        /*
-           TURN FINISHED
-        */
-
-        if (
-            nextGuesses <=
-            0
-        ) {
-
-            await endTurn(
-                cards,
-                scores
-            );
-
-            return;
-
-        }
-
-
-        await updateDoc(
-            doc(
-                db,
-                "rooms",
-                currentRoomId
-            ),
-            {
-
-                cards,
-
-                scores,
-
-                remainingGuesses:
-                    nextGuesses
-
-            }
-        );
-
-
-        return;
-
-    }
-
-
-    /*
-       WRONG TEAM / NEUTRAL
-    */
 
     await endTurn(
-        cards,
-        {
-
-            blue:
-                currentRoom.scores?.blue ||
-                0,
-
-            red:
-                currentRoom.scores?.red ||
-                0
-
+        currentRoom.cards,
+        currentRoom.scores || {
+            blue: 0,
+            red: 0
         }
     );
 
@@ -3181,10 +3566,21 @@ async function endTurn(
     scores
 ) {
 
+    if (
+        !currentRoom
+    ) {
+
+        return;
+
+    }
+
+
     const nextTeam =
         currentRoom.currentTeam ===
             "blue"
+
             ? "red"
+
             : "blue";
 
 
@@ -3210,9 +3606,6 @@ async function endTurn(
                 "",
 
             clueNumber:
-                0,
-
-            remainingGuesses:
                 0
 
         }
@@ -3220,6 +3613,112 @@ async function endTurn(
 
 
     selectedClueCards.clear();
+
+
+    lastRenderedRoomState =
+        "";
+
+}
+
+
+/* =========================================================
+   SCORES
+========================================================= */
+
+function renderScores(
+    gameScreen
+) {
+
+    const info =
+        document.createElement(
+            "div"
+        );
+
+
+    info.className =
+        "game-info";
+
+
+    const blueRemaining =
+        countRemaining(
+            "blue"
+        );
+
+
+    const redRemaining =
+        countRemaining(
+            "red"
+        );
+
+
+    const blueScore =
+        countRevealed(
+            "blue"
+        );
+
+
+    const redScore =
+        countRevealed(
+            "red"
+        );
+
+
+    info.innerHTML =
+        `
+        <div class="score blue-score">
+
+            🔵
+
+            ${
+                currentLanguage === "ar"
+                    ? "أزرق"
+                    : "Blue"
+            }
+
+            <strong>
+                ${blueScore}
+            </strong>
+
+            <small>
+                ${
+                    currentLanguage === "ar"
+                        ? `متبقي ${blueRemaining}`
+                        : `${blueRemaining} left`
+                }
+            </small>
+
+        </div>
+
+
+        <div class="score red-score">
+
+            🔴
+
+            ${
+                currentLanguage === "ar"
+                    ? "أحمر"
+                    : "Red"
+            }
+
+            <strong>
+                ${redScore}
+            </strong>
+
+            <small>
+                ${
+                    currentLanguage === "ar"
+                        ? `متبقي ${redRemaining}`
+                        : `${redRemaining} left`
+                }
+            </small>
+
+        </div>
+        `;
+
+
+    gameScreen.appendChild(
+        info
+    );
 
 }
 
@@ -3231,6 +3730,16 @@ async function endTurn(
 function renderGameOver(
     gameScreen
 ) {
+
+    if (
+        currentRoom.status !==
+        "finished"
+    ) {
+
+        return;
+
+    }
+
 
     const overlay =
         document.createElement(
@@ -3252,13 +3761,9 @@ function renderGameOver(
         "game-over-card";
 
 
-    const winner =
-        currentRoom.winner;
-
-
-    const winnerText =
-        winner ===
-        "blue"
+    const winnerName =
+        currentRoom.winner ===
+            "blue"
 
             ? (
                 currentLanguage === "ar"
@@ -3280,19 +3785,8 @@ function renderGameOver(
         </span>
 
         <h2>
-            ${winnerText}
+            ${winnerName}
         </h2>
-
-        <button
-            id="newRoundButton"
-            class="primary-button large-button"
-        >
-            ${
-                currentLanguage === "ar"
-                    ? "جولة جديدة"
-                    : "New Round"
-            }
-        </button>
         `;
 
 
@@ -3303,189 +3797,6 @@ function renderGameOver(
 
     gameScreen.appendChild(
         overlay
-    );
-
-
-    $("newRoundButton")?.addEventListener(
-        "click",
-        startNewRound
-    );
-
-}
-
-
-/* =========================================================
-   NEW ROUND
-========================================================= */
-
-async function startNewRound() {
-
-    if (
-        !currentRoom ||
-        currentRoom.hostId !==
-            currentUser.uid
-    ) {
-
-        return;
-
-    }
-
-
-    const selectedWords =
-        shuffle(
-            words[
-                currentRoom.language
-            ]
-        ).slice(
-            0,
-            25
-        );
-
-
-    const startingTeam =
-        Math.random() <
-        0.5
-            ? "blue"
-            : "red";
-
-
-    const blueCount =
-        startingTeam ===
-        "blue"
-            ? 9
-            : 8;
-
-
-    const redCount =
-        startingTeam ===
-        "red"
-            ? 9
-            : 8;
-
-
-    const types = [];
-
-
-    for (
-        let i = 0;
-        i < blueCount;
-        i++
-    ) {
-
-        types.push(
-            "blue"
-        );
-
-    }
-
-
-    for (
-        let i = 0;
-        i < redCount;
-        i++
-    ) {
-
-        types.push(
-            "red"
-        );
-
-    }
-
-
-    for (
-        let i = 0;
-        i < 7;
-        i++
-    ) {
-
-        types.push(
-            "neutral"
-        );
-
-    }
-
-
-    types.push(
-        "assassin"
-    );
-
-
-    const shuffledTypes =
-        shuffle(
-            types
-        );
-
-
-    const cards =
-        selectedWords.map(
-            (
-                word,
-                index
-            ) => ({
-
-                id:
-                    index,
-
-                word,
-
-                type:
-                    shuffledTypes[index],
-
-                revealed:
-                    false
-
-            })
-        );
-
-
-    await updateDoc(
-        doc(
-            db,
-            "rooms",
-            currentRoomId
-        ),
-        {
-
-            status:
-                "playing",
-
-            cards,
-
-            round:
-                (
-                    currentRoom.round ||
-                    1
-                ) + 1,
-
-            scores: {
-
-                blue:
-                    0,
-
-                red:
-                    0
-
-            },
-
-            currentTeam:
-                startingTeam,
-
-            phase:
-                "clue",
-
-            clue:
-                "",
-
-            clueNumber:
-                0,
-
-            remainingGuesses:
-                0,
-
-            winner:
-                null
-
-        }
     );
 
 }
@@ -3500,7 +3811,8 @@ function countRemaining(
 ) {
 
     if (
-        !currentRoom?.cards
+        !currentRoom ||
+        !currentRoom.cards
     ) {
 
         return 0;
@@ -3523,9 +3835,31 @@ function countRemainingFromCards(
 
     return cards.filter(
         card =>
-            card.type ===
-                team &&
+            card.type === team &&
             !card.revealed
+    ).length;
+
+}
+
+
+function countRevealed(
+    team
+) {
+
+    if (
+        !currentRoom ||
+        !currentRoom.cards
+    ) {
+
+        return 0;
+
+    }
+
+
+    return currentRoom.cards.filter(
+        card =>
+            card.type === team &&
+            card.revealed
     ).length;
 
 }
@@ -3535,55 +3869,101 @@ function countRemainingFromCards(
    COPY ROOM
 ========================================================= */
 
-$("copyRoomButton")?.addEventListener(
-    "click",
-    async () => {
+if ($("copyRoomButton")) {
 
-        try {
+    $("copyRoomButton")
+        .addEventListener(
+            "click",
+            async () => {
 
-            await navigator.clipboard.writeText(
-                currentRoomId
-            );
+                try {
 
-
-            $("copyRoomButton")
-                .textContent =
-                    currentLanguage === "ar"
-                        ? "تم النسخ ✓"
-                        : "Copied ✓";
+                    await navigator.clipboard.writeText(
+                        currentRoomId
+                    );
 
 
-            setTimeout(
-                () => {
+                    $("copyRoomButton")
+                        .textContent =
+                            currentLanguage ===
+                                "ar"
 
-                    if (
-                        $("copyRoomButton")
-                    ) {
+                                ? "تم النسخ ✓"
 
-                        $("copyRoomButton")
-                            .textContent =
-                                text[
-                                    currentLanguage
-                                ].copy;
+                                : "Copied ✓";
 
-                    }
 
-                },
-                1500
-            );
+                    setTimeout(
+                        () => {
 
-        }
+                            if (
+                                $("copyRoomButton")
+                            ) {
 
-        catch {
+                                $("copyRoomButton")
+                                    .textContent =
+                                        text[
+                                            currentLanguage
+                                        ].copy;
 
-            alert(
-                currentRoomId
-            );
+                            }
 
-        }
+                        },
+                        1500
+                    );
 
-    }
-);
+                }
+
+                catch {
+
+                    alert(
+                        currentRoomId
+                    );
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
 
 
 /* =========================================================
@@ -3601,7 +3981,9 @@ function shuffle(
     for (
         let i =
             result.length - 1;
+
         i > 0;
+
         i--
     ) {
 

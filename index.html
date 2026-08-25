@@ -3,18 +3,24 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>DEVClue | GDG University of Taif</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
 
 <body>
 
-    <!-- =========================
+    <!-- =====================================================
          BACKGROUND
-    ========================== -->
+    ====================================================== -->
 
     <div class="background">
 
@@ -25,9 +31,17 @@
 
         <div class="grid-pattern"></div>
 
-        <div class="code-symbol symbol-one">&lt;/&gt;</div>
-        <div class="code-symbol symbol-two">{ }</div>
-        <div class="code-symbol symbol-three">&lt; / &gt;</div>
+        <div class="code-symbol symbol-one">
+            &lt;/&gt;
+        </div>
+
+        <div class="code-symbol symbol-two">
+            { }
+        </div>
+
+        <div class="code-symbol symbol-three">
+            &lt; / &gt;
+        </div>
 
         <div class="puzzle puzzle-one">
             <div></div>
@@ -38,15 +52,27 @@
         </div>
 
         <div class="dots dots-one">
-            <span></span><span></span><span></span>
-            <span></span><span></span><span></span>
-            <span></span><span></span><span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
 
         <div class="dots dots-two">
-            <span></span><span></span><span></span>
-            <span></span><span></span><span></span>
-            <span></span><span></span><span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
 
         <div class="node node-one"></div>
@@ -60,11 +86,14 @@
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          START SCREEN
-    ========================== -->
+    ====================================================== -->
 
-    <main id="startScreen" class="screen start-screen">
+    <main
+        id="startScreen"
+        class="screen start-screen"
+    >
 
         <div class="content">
 
@@ -116,11 +145,14 @@
     </main>
 
 
-    <!-- =========================
-         CREATE / JOIN SCREEN
-    ========================== -->
+    <!-- =====================================================
+         CREATE / JOIN
+    ====================================================== -->
 
-    <main id="roomScreen" class="screen hidden">
+    <main
+        id="roomScreen"
+        class="screen hidden"
+    >
 
         <div class="room-wrapper">
 
@@ -129,14 +161,21 @@
             </div>
 
             <div class="room-heading">
-                <h2 id="roomTitle">Play DEVClue</h2>
+
+                <h2 id="roomTitle">
+                    Play DEVClue
+                </h2>
 
                 <p id="roomSubtitle">
                     Create a room or join your team.
                 </p>
+
             </div>
 
+
             <div class="room-actions">
+
+                <!-- CREATE -->
 
                 <section class="room-card create-card">
 
@@ -161,6 +200,8 @@
 
                 </section>
 
+
+                <!-- JOIN -->
 
                 <section class="room-card join-card">
 
@@ -196,6 +237,7 @@
 
             </div>
 
+
             <button
                 id="backToLanguageButton"
                 class="back-button"
@@ -208,11 +250,14 @@
     </main>
 
 
-    <!-- =========================
-         PLAYER NAME SCREEN
-    ========================== -->
+    <!-- =====================================================
+         PLAYER NAME
+    ====================================================== -->
 
-    <main id="nameScreen" class="screen hidden">
+    <main
+        id="nameScreen"
+        class="screen hidden"
+    >
 
         <div class="simple-panel">
 
@@ -256,19 +301,21 @@
     </main>
 
 
-    <!-- =========================
+    <!-- =====================================================
          LOBBY
-    ========================== -->
+    ====================================================== -->
 
-    <main id="lobbyScreen" class="screen hidden">
+    <main
+        id="lobbyScreen"
+        class="screen hidden"
+    >
 
         <div class="lobby-wrapper">
 
             <header class="lobby-header">
 
-                <div>
+                <div class="lobby-brand">
 
-                    <!-- GDG LOGO -->
                     <img
                         src="Optional Logo - GDGs Stacked - Light.png"
                         alt="Google Developer Group University of Taif"
@@ -303,7 +350,9 @@
 
             <section class="lobby-board">
 
-                <!-- BLUE -->
+                <!-- =================================================
+                     BLUE TEAM
+                ================================================== -->
 
                 <div class="team-lobby blue-team-lobby">
 
@@ -311,7 +360,7 @@
 
                         <span>🔵</span>
 
-                        <h2 id="blueTeamTitle">
+                        <h2>
                             Blue Team
                         </h2>
 
@@ -328,9 +377,11 @@
                             id="blueSpymaster"
                             class="player-list"
                         >
+
                             <span class="empty-player">
                                 Empty
                             </span>
+
                         </div>
 
                     </div>
@@ -346,9 +397,11 @@
                             id="blueOperatives"
                             class="player-list"
                         >
+
                             <span class="empty-player">
                                 Empty
                             </span>
+
                         </div>
 
                     </div>
@@ -356,13 +409,16 @@
                 </div>
 
 
-                <!-- CENTER -->
+                <!-- =================================================
+                     CENTER
+                ================================================== -->
 
                 <div class="lobby-center">
 
                     <div class="you-badge">
                         YOU
                     </div>
+
 
                     <div class="role-selection">
 
@@ -443,7 +499,9 @@
                 </div>
 
 
-                <!-- RED -->
+                <!-- =================================================
+                     RED TEAM
+                ================================================== -->
 
                 <div class="team-lobby red-team-lobby">
 
@@ -451,7 +509,7 @@
 
                         <span>🔴</span>
 
-                        <h2 id="redTeamTitle">
+                        <h2>
                             Red Team
                         </h2>
 
@@ -468,9 +526,11 @@
                             id="redSpymaster"
                             class="player-list"
                         >
+
                             <span class="empty-player">
                                 Empty
                             </span>
+
                         </div>
 
                     </div>
@@ -486,9 +546,11 @@
                             id="redOperatives"
                             class="player-list"
                         >
+
                             <span class="empty-player">
                                 Empty
                             </span>
+
                         </div>
 
                     </div>
@@ -502,283 +564,35 @@
     </main>
 
 
-    <!-- =========================
-         GAME
-    ========================== -->
-
-    <main id="gameScreen" class="screen hidden">
-
-        <header class="game-header">
-
-            <div class="game-brand">
-                DEV<span>Clue</span>
-            </div>
-
-            <div class="game-room">
-
-                <span>
-                    Room
-                </span>
-
-                <strong id="gameRoomCode">
-                    ------
-                </strong>
-
-            </div>
-
-            <div class="round-info">
-
-                <span id="roundLabel">
-                    Round 1
-                </span>
-
-                <span
-                    id="turnLabel"
-                    class="turn-label"
-                >
-                    Team Blue
-                </span>
-
-            </div>
-
-        </header>
-
-
-        <!-- =========================
-             SPYMASTER GAME VIEW
-        ========================== -->
-
-        <section
-            id="spymasterView"
-            class="game-view hidden"
-        >
-
-            <div class="game-topbar">
-
-                <div>
-
-                    <span class="role-small">
-                        SPYMASTER
-                    </span>
-
-                    <h2 id="spymasterTitle">
-                        Team Blue
-                    </h2>
-
-                </div>
-
-
-                <div class="score-board">
-
-                    <div class="score blue-score">
-
-                        <span>
-                            BLUE
-                        </span>
-
-                        <strong id="blueScore">
-                            0
-                        </strong>
-
-                    </div>
-
-
-                    <div class="score red-score">
-
-                        <span>
-                            RED
-                        </span>
-
-                        <strong id="redScore">
-                            0
-                        </strong>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div
-                id="spymasterInstruction"
-                class="instruction"
-            >
-                Give your team a clue
-            </div>
-
-
-            <section
-                id="spymasterCards"
-                class="cards-container"
-            ></section>
-
-
-            <div
-                id="cluePanel"
-                class="clue-panel"
-            >
-
-                <label for="clueInput">
-                    Your Clue
-                </label>
-
-                <div class="clue-input-row">
-
-                    <input
-                        id="clueInput"
-                        type="text"
-                        placeholder="Enter your clue..."
-                        maxlength="30"
-                    >
-
-                    <input
-                        id="clueNumber"
-                        type="number"
-                        min="1"
-                        max="9"
-                        value="1"
-                    >
-
-                    <button
-                        id="giveClueButton"
-                        class="primary-button"
-                    >
-                        Give Clue
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             OPERATIVE GAME VIEW
-        ========================== -->
-
-        <section
-            id="operativesView"
-            class="game-view hidden"
-        >
-
-            <div class="game-topbar">
-
-                <div>
-
-                    <span class="role-small">
-                        OPERATIVES
-                    </span>
-
-                    <h2 id="operativeTitle">
-                        Team Blue
-                    </h2>
-
-                </div>
-
-
-                <div class="score-board">
-
-                    <div class="score blue-score">
-
-                        <span>
-                            BLUE
-                        </span>
-
-                        <strong id="operativeBlueScore">
-                            0
-                        </strong>
-
-                    </div>
-
-
-                    <div class="score red-score">
-
-                        <span>
-                            RED
-                        </span>
-
-                        <strong id="operativeRedScore">
-                            0
-                        </strong>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="current-clue">
-
-                <span>
-                    CLUE
-                </span>
-
-                <strong id="currentClue">
-                    —
-                </strong>
-
-                <strong id="currentClueNumber">
-                    0
-                </strong>
-
-            </div>
-
-
-            <div
-                id="operativeInstruction"
-                class="instruction"
-            >
-                Choose a card
-            </div>
-
-
-            <section
-                id="operativeCards"
-                class="cards-container"
-            ></section>
-
-        </section>
-
-
-        <!-- =========================
-             GAME OVER
-        ========================== -->
-
-        <div
-            id="gameOverPanel"
-            class="game-over hidden"
-        >
-
-            <div class="game-over-card">
-
-                <span>
-                    GAME OVER
-                </span>
-
-                <h2 id="winnerText">
-                    Blue Team Wins!
-                </h2>
-
-                <button
-                    id="newRoundButton"
-                    class="primary-button large-button"
-                >
-                    New Round
-                </button>
-
-            </div>
-
-        </div>
+    <!-- =====================================================
+         GAME SCREEN
+    ====================================================== -->
+
+    <main
+        id="gameScreen"
+        class="screen hidden"
+    >
+
+        <!--
+            سيتم بناء محتوى اللعبة هنا من script.js.
+
+            مهم:
+            لا نضع لوحة قديمة داخل HTML،
+            لأن JavaScript سيبني الواجهة حسب:
+            - Spymaster
+            - Operative
+            - الفريق
+            - الدور الحالي
+            - التلميح
+            - الكروت
+        -->
 
     </main>
 
 
-    <!-- =========================
-         FIREBASE / APP
-    ========================== -->
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
 
     <script
         type="module"
