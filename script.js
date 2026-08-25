@@ -63,6 +63,11 @@ let roomListener = null;
 
 let playersListener = null;
 
+/*
+   This is LOCAL to the Spymaster.
+   Operatives never see which cards
+   the Spymaster selected.
+*/
 let selectedClueCards = new Set();
 
 
@@ -389,87 +394,133 @@ const text = {
 
 function applyLanguage() {
 
-    const t = text[currentLanguage];
+    const t =
+        text[currentLanguage];
 
 
     if ($("roomTitle"))
-        $("roomTitle").textContent = t.roomTitle;
+        $("roomTitle").textContent =
+            t.roomTitle;
+
 
     if ($("roomSubtitle"))
-        $("roomSubtitle").textContent = t.roomSubtitle;
+        $("roomSubtitle").textContent =
+            t.roomSubtitle;
+
 
     if ($("createTitle"))
-        $("createTitle").textContent = t.createTitle;
+        $("createTitle").textContent =
+            t.createTitle;
+
 
     if ($("createText"))
-        $("createText").textContent = t.createText;
+        $("createText").textContent =
+            t.createText;
+
 
     if ($("createRoomButton"))
-        $("createRoomButton").textContent = t.createButton;
+        $("createRoomButton").textContent =
+            t.createButton;
+
 
     if ($("joinTitle"))
-        $("joinTitle").textContent = t.joinTitle;
+        $("joinTitle").textContent =
+            t.joinTitle;
+
 
     if ($("joinText"))
-        $("joinText").textContent = t.joinText;
+        $("joinText").textContent =
+            t.joinText;
+
 
     if ($("joinRoomButton"))
-        $("joinRoomButton").textContent = t.joinButton;
+        $("joinRoomButton").textContent =
+            t.joinButton;
+
 
     if ($("nameTitle"))
-        $("nameTitle").textContent = t.nameTitle;
+        $("nameTitle").textContent =
+            t.nameTitle;
+
 
     if ($("nameSubtitle"))
-        $("nameSubtitle").textContent = t.nameSubtitle;
+        $("nameSubtitle").textContent =
+            t.nameSubtitle;
+
 
     if ($("continueNameButton"))
-        $("continueNameButton").textContent = t.continue;
+        $("continueNameButton").textContent =
+            t.continue;
+
 
     if ($("backToLanguageButton"))
-        $("backToLanguageButton").textContent = t.back;
+        $("backToLanguageButton").textContent =
+            t.back;
+
 
     if ($("backToRoomButton"))
-        $("backToRoomButton").textContent = t.back;
+        $("backToRoomButton").textContent =
+            t.back;
+
 
     if ($("lobbySubtitle"))
-        $("lobbySubtitle").textContent = t.lobbySubtitle;
+        $("lobbySubtitle").textContent =
+            t.lobbySubtitle;
+
 
     if ($("roomCodeLabel"))
-        $("roomCodeLabel").textContent = t.roomCode;
+        $("roomCodeLabel").textContent =
+            t.roomCode;
+
 
     if ($("copyRoomButton"))
-        $("copyRoomButton").textContent = t.copy;
+        $("copyRoomButton").textContent =
+            t.copy;
+
 
     if ($("teamChoiceTitle"))
-        $("teamChoiceTitle").textContent = t.team;
+        $("teamChoiceTitle").textContent =
+            t.team;
+
 
     if ($("roleChoiceTitle"))
-        $("roleChoiceTitle").textContent = t.role;
+        $("roleChoiceTitle").textContent =
+            t.role;
+
 
     if ($("chooseBlueButton"))
         $("chooseBlueButton").textContent =
             `🔵 ${t.blue}`;
 
+
     if ($("chooseRedButton"))
         $("chooseRedButton").textContent =
             `🔴 ${t.red}`;
+
 
     if ($("chooseSpyButton"))
         $("chooseSpyButton").textContent =
             `🕵🏻 ${t.spy}`;
 
+
     if ($("chooseOperativeButton"))
         $("chooseOperativeButton").textContent =
             `👥 ${t.operative}`;
 
+
     if ($("hostText"))
-        $("hostText").textContent = t.host;
+        $("hostText").textContent =
+            t.host;
+
 
     if ($("waitingText"))
-        $("waitingText").textContent = t.waiting;
+        $("waitingText").textContent =
+            t.waiting;
+
 
     if ($("startGameButton"))
-        $("startGameButton").textContent = t.start;
+        $("startGameButton").textContent =
+            t.start;
 
 }
 
@@ -486,7 +537,9 @@ $("arabicButton")?.addEventListener(
 
         applyLanguage();
 
-        showScreen("roomScreen");
+        showScreen(
+            "roomScreen"
+        );
 
     }
 );
@@ -500,21 +553,25 @@ $("englishButton")?.addEventListener(
 
         applyLanguage();
 
-        showScreen("roomScreen");
+        showScreen(
+            "roomScreen"
+        );
 
     }
 );
 
 
 /* =========================================================
-   BACK BUTTONS
+   BACK
 ========================================================= */
 
 $("backToLanguageButton")?.addEventListener(
     "click",
     () => {
 
-        showScreen("startScreen");
+        showScreen(
+            "startScreen"
+        );
 
     }
 );
@@ -524,7 +581,9 @@ $("backToRoomButton")?.addEventListener(
     "click",
     () => {
 
-        showScreen("roomScreen");
+        showScreen(
+            "roomScreen"
+        );
 
     }
 );
@@ -538,11 +597,15 @@ $("createRoomButton")?.addEventListener(
     "click",
     () => {
 
-        roomMode = "create";
+        roomMode =
+            "create";
 
-        $("playerName").value = "";
+        $("playerName").value =
+            "";
 
-        showScreen("nameScreen");
+        showScreen(
+            "nameScreen"
+        );
 
     }
 );
@@ -563,7 +626,9 @@ $("joinRoomButton")?.addEventListener(
                 .toUpperCase();
 
 
-        if (code.length !== 6) {
+        if (
+            code.length !== 6
+        ) {
 
             alert(
                 currentLanguage === "ar"
@@ -576,11 +641,17 @@ $("joinRoomButton")?.addEventListener(
         }
 
 
-        roomMode = "join";
+        roomMode =
+            "join";
 
-        $("playerName").value = "";
 
-        showScreen("nameScreen");
+        $("playerName").value =
+            "";
+
+
+        showScreen(
+            "nameScreen"
+        );
 
     }
 );
@@ -628,9 +699,14 @@ $("continueNameButton")?.addEventListener(
 
         try {
 
-            if (roomMode === "create") {
+            if (
+                roomMode ===
+                "create"
+            ) {
 
-                await createRoom(name);
+                await createRoom(
+                    name
+                );
 
             }
 
@@ -675,6 +751,7 @@ function generateRoomCode() {
     const characters =
         "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
+
     let code = "";
 
 
@@ -704,7 +781,9 @@ function generateRoomCode() {
    CREATE ROOM
 ========================================================= */
 
-async function createRoom(name) {
+async function createRoom(
+    name
+) {
 
     let code;
 
@@ -718,12 +797,14 @@ async function createRoom(name) {
         code =
             generateRoomCode();
 
+
         roomRef =
             doc(
                 db,
                 "rooms",
                 code
             );
+
 
         snapshot =
             await getDoc(
@@ -732,7 +813,9 @@ async function createRoom(name) {
 
     }
 
-    while (snapshot.exists());
+    while (
+        snapshot.exists()
+    );
 
 
     await setDoc(
@@ -767,9 +850,11 @@ async function createRoom(name) {
 
             name,
 
-            team: null,
+            team:
+                null,
 
-            role: null,
+            role:
+                null,
 
             joinedAt:
                 serverTimestamp()
@@ -778,7 +863,9 @@ async function createRoom(name) {
     );
 
 
-    openRoom(code);
+    openRoom(
+        code
+    );
 
 }
 
@@ -806,7 +893,9 @@ async function joinRoom(
         );
 
 
-    if (!snapshot.exists()) {
+    if (
+        !snapshot.exists()
+    ) {
 
         throw new Error(
             currentLanguage === "ar"
@@ -821,7 +910,10 @@ async function joinRoom(
         snapshot.data();
 
 
-    if (room.status !== "lobby") {
+    if (
+        room.status !==
+        "lobby"
+    ) {
 
         throw new Error(
             currentLanguage === "ar"
@@ -831,12 +923,6 @@ async function joinRoom(
 
     }
 
-
-    /*
-       مهم جدًا:
-       نستخدم UID الخاص بالضيف كمفتاح للاعب.
-       لذلك كل لاعب يحصل على document مستقل.
-    */
 
     await setDoc(
         doc(
@@ -850,9 +936,11 @@ async function joinRoom(
 
             name,
 
-            team: null,
+            team:
+                null,
 
-            role: null,
+            role:
+                null,
 
             joinedAt:
                 serverTimestamp()
@@ -861,7 +949,9 @@ async function joinRoom(
     );
 
 
-    openRoom(code);
+    openRoom(
+        code
+    );
 
 }
 
@@ -870,19 +960,27 @@ async function joinRoom(
    OPEN ROOM
 ========================================================= */
 
-function openRoom(code) {
+function openRoom(
+    code
+) {
 
-    currentRoomId = code;
+    currentRoomId =
+        code;
 
 
     if ($("roomCode"))
-        $("roomCode").textContent = code;
+        $("roomCode").textContent =
+            code;
+
 
     if ($("gameRoomCode"))
-        $("gameRoomCode").textContent = code;
+        $("gameRoomCode").textContent =
+            code;
 
 
-    showScreen("lobbyScreen");
+    showScreen(
+        "lobbyScreen"
+    );
 
 
     listenToRoom();
@@ -898,7 +996,9 @@ function openRoom(code) {
 
 function listenToRoom() {
 
-    if (roomListener) {
+    if (
+        roomListener
+    ) {
 
         roomListener();
 
@@ -915,7 +1015,9 @@ function listenToRoom() {
 
             snapshot => {
 
-                if (!snapshot.exists()) {
+                if (
+                    !snapshot.exists()
+                ) {
 
                     alert(
                         currentLanguage === "ar"
@@ -930,12 +1032,25 @@ function listenToRoom() {
                 }
 
 
+                /*
+                   Update room immediately.
+                   This listener controls game state.
+                */
+
                 currentRoom =
                     snapshot.data();
 
 
+                console.log(
+                    "ROOM UPDATE:",
+                    currentRoom.status,
+                    currentRoom.phase,
+                    currentRoom.clue
+                );
+
+
                 /*
-                   اللعبة بدأت
+                   GAME STARTED
                 */
 
                 if (
@@ -943,11 +1058,22 @@ function listenToRoom() {
                     "playing"
                 ) {
 
+                    if (
+                        !currentPlayer
+                    ) {
+
+                        return;
+
+                    }
+
+
                     showScreen(
                         "gameScreen"
                     );
 
+
                     renderGameBoard();
+
 
                     return;
 
@@ -955,7 +1081,7 @@ function listenToRoom() {
 
 
                 /*
-                   اللعبة انتهت
+                   GAME FINISHED
                 */
 
                 if (
@@ -963,11 +1089,22 @@ function listenToRoom() {
                     "finished"
                 ) {
 
+                    if (
+                        !currentPlayer
+                    ) {
+
+                        return;
+
+                    }
+
+
                     showScreen(
                         "gameScreen"
                     );
 
+
                     renderGameBoard();
+
 
                     return;
 
@@ -975,12 +1112,13 @@ function listenToRoom() {
 
 
                 /*
-                   اللوبي
+                   LOBBY
                 */
 
                 showScreen(
                     "lobbyScreen"
                 );
+
 
                 updateLobby();
 
@@ -1005,7 +1143,9 @@ function listenToRoom() {
 
 function listenToPlayers() {
 
-    if (playersListener) {
+    if (
+        playersListener
+    ) {
 
         playersListener();
 
@@ -1040,10 +1180,6 @@ function listenToPlayers() {
                     );
 
 
-                /*
-                   تحديث اللاعب الحالي
-                */
-
                 currentPlayer =
                     players.find(
                         player =>
@@ -1053,29 +1189,16 @@ function listenToPlayers() {
 
 
                 /*
-                   تحديث اللوبي
+                   IMPORTANT:
+                   This listener ONLY updates
+                   player/lobby information.
+
+                   It does NOT redraw the game.
+                   This prevents unnecessary delay
+                   when the Spymaster sends a clue.
                 */
 
                 updateLobby();
-
-
-                /*
-                   تحديث اللعبة
-                */
-
-                if (
-                    currentRoom &&
-                    (
-                        currentRoom.status ===
-                        "playing" ||
-                        currentRoom.status ===
-                        "finished"
-                    )
-                ) {
-
-                    renderGameBoard();
-
-                }
 
             },
 
@@ -1136,41 +1259,33 @@ function updateLobby() {
     );
 
 
-    /*
-       Current player team
-    */
-
     $("chooseBlueButton")?.classList.toggle(
         "selected",
-        currentPlayer.team === "blue"
+        currentPlayer.team ===
+            "blue"
     );
 
 
     $("chooseRedButton")?.classList.toggle(
         "selected",
-        currentPlayer.team === "red"
+        currentPlayer.team ===
+            "red"
     );
 
 
-    /*
-       Current player role
-    */
-
     $("chooseSpyButton")?.classList.toggle(
         "selected",
-        currentPlayer.role === "spymaster"
+        currentPlayer.role ===
+            "spymaster"
     );
 
 
     $("chooseOperativeButton")?.classList.toggle(
         "selected",
-        currentPlayer.role === "operative"
+        currentPlayer.role ===
+            "operative"
     );
 
-
-    /*
-       Host controls
-    */
 
     const isHost =
         currentRoom.hostId ===
@@ -1189,15 +1304,10 @@ function updateLobby() {
     );
 
 
-    /*
-       HOST CAN START IF HE HAS
-       A TEAM + ROLE.
-
-       We intentionally don't require
-       another player for testing.
-    */
-
-    if (isHost) {
+    if (
+        isHost &&
+        $("startGameButton")
+    ) {
 
         $("startGameButton").disabled =
             !currentPlayer.team ||
@@ -1218,7 +1328,9 @@ function renderPlayerList(
     container
 ) {
 
-    if (!container) {
+    if (
+        !container
+    ) {
 
         return;
 
@@ -1228,15 +1340,21 @@ function renderPlayerList(
     const filtered =
         players.filter(
             player =>
-                player.team === team &&
-                player.role === role
+                player.team ===
+                    team &&
+                player.role ===
+                    role
         );
 
 
-    container.innerHTML = "";
+    container.innerHTML =
+        "";
 
 
-    if (filtered.length === 0) {
+    if (
+        filtered.length ===
+        0
+    ) {
 
         const empty =
             document.createElement(
@@ -1249,7 +1367,8 @@ function renderPlayerList(
 
 
         empty.textContent =
-            currentLanguage === "ar"
+            currentLanguage ===
+                "ar"
                 ? "فارغ"
                 : "Empty";
 
@@ -1304,26 +1423,28 @@ function renderPlayerList(
 
 
 /* =========================================================
-   TEAM BUTTONS
+   TEAM
 ========================================================= */
 
 $("chooseBlueButton")?.addEventListener(
     "click",
-    () => chooseTeam("blue")
+    () =>
+        chooseTeam("blue")
 );
 
 
 $("chooseRedButton")?.addEventListener(
     "click",
-    () => chooseTeam("red")
+    () =>
+        chooseTeam("red")
 );
 
 
-async function chooseTeam(team) {
+async function chooseTeam(
+    team
+) {
 
     if (
-        !currentUser ||
-        !currentRoomId ||
         !currentPlayer
     ) {
 
@@ -1333,14 +1454,15 @@ async function chooseTeam(team) {
 
 
     /*
-       If changing team while being Spymaster,
-       remove the role first.
+       If the player changes team,
+       reset their role.
     */
 
-    const newRole =
-        currentPlayer.team !== team
-            ? null
-            : currentPlayer.role;
+    const role =
+        currentPlayer.team ===
+        team
+            ? currentPlayer.role
+            : null;
 
 
     await updateDoc(
@@ -1355,8 +1477,7 @@ async function chooseTeam(team) {
 
             team,
 
-            role:
-                newRole
+            role
 
         }
     );
@@ -1365,27 +1486,38 @@ async function chooseTeam(team) {
 
 
 /* =========================================================
-   ROLE BUTTONS
+   ROLE
 ========================================================= */
 
 $("chooseSpyButton")?.addEventListener(
     "click",
-    () => chooseRole("spymaster")
+    () =>
+        chooseRole(
+            "spymaster"
+        )
 );
 
 
 $("chooseOperativeButton")?.addEventListener(
     "click",
-    () => chooseRole("operative")
+    () =>
+        chooseRole(
+            "operative"
+        )
 );
 
 
-async function chooseRole(role) {
+async function chooseRole(
+    role
+) {
 
-    if (!currentPlayer?.team) {
+    if (
+        !currentPlayer?.team
+    ) {
 
         alert(
-            currentLanguage === "ar"
+            currentLanguage ===
+                "ar"
                 ? "اختر الفريق أولًا."
                 : "Choose a team first."
         );
@@ -1399,7 +1531,10 @@ async function chooseRole(role) {
        One Spymaster per team.
     */
 
-    if (role === "spymaster") {
+    if (
+        role ===
+        "spymaster"
+    ) {
 
         const taken =
             players.some(
@@ -1415,10 +1550,13 @@ async function chooseRole(role) {
             );
 
 
-        if (taken) {
+        if (
+            taken
+        ) {
 
             alert(
-                currentLanguage === "ar"
+                currentLanguage ===
+                    "ar"
                     ? "هذا الفريق لديه سبايماستر بالفعل."
                     : "This team already has a Spymaster."
             );
@@ -1470,10 +1608,6 @@ async function startGame() {
     }
 
 
-    /*
-       ONLY HOST CAN START
-    */
-
     if (
         currentRoom.hostId !==
         currentUser.uid
@@ -1483,11 +1617,6 @@ async function startGame() {
 
     }
 
-
-    /*
-       For testing:
-       host only needs a team + role.
-    */
 
     if (
         !currentPlayer.team ||
@@ -1506,7 +1635,7 @@ async function startGame() {
 
 
     /*
-       Generate 25 words
+       25 random words
     */
 
     const selectedWords =
@@ -1521,27 +1650,30 @@ async function startGame() {
 
 
     /*
-       Pick starting team
+       Starting team
     */
 
     const startingTeam =
-        Math.random() < 0.5
+        Math.random() <
+        0.5
             ? "blue"
             : "red";
 
 
     /*
-       Standard Codenames distribution
+       Codenames distribution
     */
 
     const blueCount =
-        startingTeam === "blue"
+        startingTeam ===
+        "blue"
             ? 9
             : 8;
 
 
     const redCount =
-        startingTeam === "red"
+        startingTeam ===
+        "red"
             ? 9
             : 8;
 
@@ -1555,7 +1687,9 @@ async function startGame() {
         i++
     ) {
 
-        types.push("blue");
+        types.push(
+            "blue"
+        );
 
     }
 
@@ -1566,7 +1700,9 @@ async function startGame() {
         i++
     ) {
 
-        types.push("red");
+        types.push(
+            "red"
+        );
 
     }
 
@@ -1577,12 +1713,16 @@ async function startGame() {
         i++
     ) {
 
-        types.push("neutral");
+        types.push(
+            "neutral"
+        );
 
     }
 
 
-    types.push("assassin");
+    types.push(
+        "assassin"
+    );
 
 
     const shuffledTypes =
@@ -1591,23 +1731,31 @@ async function startGame() {
 
     const cards =
         selectedWords.map(
-            (word, index) => ({
+            (
+                word,
+                index
+            ) => ({
 
-                id: index,
+                id:
+                    index,
 
                 word,
 
                 type:
                     shuffledTypes[index],
 
-                revealed: false
+                revealed:
+                    false
 
             })
         );
 
 
     /*
-       Save complete game state
+       ONE FIRESTORE UPDATE.
+
+       All clients listening to the room
+       receive the new game state.
     */
 
     await updateDoc(
@@ -1628,9 +1776,11 @@ async function startGame() {
 
             scores: {
 
-                blue: 0,
+                blue:
+                    0,
 
-                red: 0
+                red:
+                    0
 
             },
 
@@ -1679,7 +1829,9 @@ function renderGameBoard() {
         $("gameScreen");
 
 
-    if (!gameScreen) {
+    if (
+        !gameScreen
+    ) {
 
         return;
 
@@ -1687,17 +1839,17 @@ function renderGameBoard() {
 
 
     /*
-       DO NOT REBUILD THE ENTIRE HTML PAGE.
-       We only build the game content
-       inside gameScreen.
+       Rebuild game only when ROOM changes.
+       Player listener no longer triggers this.
     */
 
-    gameScreen.innerHTML = "";
+    gameScreen.innerHTML =
+        "";
 
 
-    /*
-       GAME HEADER
-    */
+    /* =====================================================
+       HEADER
+    ===================================================== */
 
     const header =
         document.createElement(
@@ -1723,34 +1875,52 @@ function renderGameBoard() {
         `DEV<span>Clue</span>`;
 
 
-    const roomBox =
+    const room =
         document.createElement(
             "div"
         );
 
 
-    roomBox.className =
+    room.className =
         "game-room";
 
 
-    roomBox.innerHTML =
+    room.innerHTML =
         `
         <span>Room</span>
-        <strong>${currentRoomId}</strong>
+
+        <strong>
+            ${currentRoomId}
+        </strong>
         `;
 
 
-    const roundBox =
+    const round =
         document.createElement(
             "div"
         );
 
 
-    roundBox.className =
+    round.className =
         "round-info";
 
 
-    roundBox.innerHTML =
+    const teamLabel =
+        currentRoom.currentTeam ===
+        "blue"
+            ? (
+                currentLanguage === "ar"
+                    ? "الفريق الأزرق"
+                    : "Team Blue"
+            )
+            : (
+                currentLanguage === "ar"
+                    ? "الفريق الأحمر"
+                    : "Team Red"
+            );
+
+
+    round.innerHTML =
         `
         <span>
             ${
@@ -1761,19 +1931,7 @@ function renderGameBoard() {
         </span>
 
         <span class="turn-label">
-            ${
-                currentRoom.currentTeam === "blue"
-                    ? (
-                        currentLanguage === "ar"
-                            ? "الفريق الأزرق"
-                            : "Team Blue"
-                    )
-                    : (
-                        currentLanguage === "ar"
-                            ? "الفريق الأحمر"
-                            : "Team Red"
-                    )
-            }
+            ${teamLabel}
         </span>
         `;
 
@@ -1783,11 +1941,11 @@ function renderGameBoard() {
     );
 
     header.appendChild(
-        roomBox
+        room
     );
 
     header.appendChild(
-        roundBox
+        round
     );
 
 
@@ -1796,17 +1954,17 @@ function renderGameBoard() {
     );
 
 
-    /*
-       GAME TITLE
-    */
+    /* =====================================================
+       TOP BAR
+    ===================================================== */
 
-    const top =
+    const topBar =
         document.createElement(
             "div"
         );
 
 
-    top.className =
+    topBar.className =
         "game-topbar";
 
 
@@ -1816,30 +1974,32 @@ function renderGameBoard() {
         );
 
 
-    const roleLabel =
+    const role =
         document.createElement(
             "span"
         );
 
 
-    roleLabel.className =
+    role.className =
         "role-small";
 
 
-    roleLabel.textContent =
-        currentPlayer.role === "spymaster"
+    role.textContent =
+        currentPlayer.role ===
+        "spymaster"
             ? "SPYMASTER"
             : "OPERATIVES";
 
 
-    const teamTitle =
+    const title =
         document.createElement(
             "h2"
         );
 
 
-    teamTitle.textContent =
-        currentPlayer.team === "blue"
+    title.textContent =
+        currentPlayer.team ===
+        "blue"
             ? (
                 currentLanguage === "ar"
                     ? "الفريق الأزرق"
@@ -1853,38 +2013,32 @@ function renderGameBoard() {
 
 
     titleBox.appendChild(
-        roleLabel
+        role
     );
 
     titleBox.appendChild(
-        teamTitle
+        title
     );
 
 
-    /*
-       SCORE
-    */
-
-    const scoreBoard =
+    const scores =
         document.createElement(
             "div"
         );
 
 
-    scoreBoard.className =
+    scores.className =
         "score-board";
 
 
-    scoreBoard.innerHTML =
+    scores.innerHTML =
         `
         <div class="score blue-score">
 
             <span>BLUE</span>
 
             <strong>
-                ${
-                    currentRoom.scores?.blue || 0
-                }
+                ${currentRoom.scores?.blue || 0}
             </strong>
 
         </div>
@@ -1894,32 +2048,30 @@ function renderGameBoard() {
             <span>RED</span>
 
             <strong>
-                ${
-                    currentRoom.scores?.red || 0
-                }
+                ${currentRoom.scores?.red || 0}
             </strong>
 
         </div>
         `;
 
 
-    top.appendChild(
+    topBar.appendChild(
         titleBox
     );
 
-    top.appendChild(
-        scoreBoard
+    topBar.appendChild(
+        scores
     );
 
 
     gameScreen.appendChild(
-        top
+        topBar
     );
 
 
-    /*
-       TURN / INSTRUCTION
-    */
+    /* =====================================================
+       INSTRUCTION
+    ===================================================== */
 
     const instruction =
         document.createElement(
@@ -1948,48 +2100,55 @@ function renderGameBoard() {
         "clue"
     ) {
 
-        instruction.textContent =
+        if (
             currentPlayer.role ===
-                "spymaster"
-                ? (
-                    currentPlayer.team ===
-                    currentRoom.currentTeam
-                        ? (
-                            currentLanguage === "ar"
-                                ? "اختر الكلمات التي تريد ربطها بالتلميح 💡"
-                                : "Select the words for your clue 💡"
-                        )
-                        : (
-                            currentLanguage === "ar"
-                                ? "بانتظار الفريق الآخر..."
-                                : "Waiting for the other team..."
-                        )
-                )
-                : (
-                    currentLanguage === "ar"
-                        ? "بانتظار التلميح..."
-                        : "Waiting for the clue..."
-                );
+            "spymaster" &&
+            currentPlayer.team ===
+            currentRoom.currentTeam
+        ) {
+
+            instruction.textContent =
+                currentLanguage === "ar"
+                    ? "حدد الكلمات ثم أعطِ التلميح 💡"
+                    : "Select the words and give a clue 💡";
+
+        }
+
+        else {
+
+            instruction.textContent =
+                currentLanguage === "ar"
+                    ? "بانتظار التلميح..."
+                    : "Waiting for the clue...";
+
+        }
 
     }
 
     else {
 
-        instruction.textContent =
+        if (
             currentPlayer.role ===
-                "operative" &&
+            "operative" &&
             currentPlayer.team ===
-                currentRoom.currentTeam
-                ? (
-                    currentLanguage === "ar"
-                        ? `اختر كلمة — متبقي ${currentRoom.remainingGuesses} تخمين`
-                        : `Choose a card — ${currentRoom.remainingGuesses} guesses left`
-                )
-                : (
-                    currentLanguage === "ar"
-                        ? "بانتظار تخمين الفريق..."
-                        : "Waiting for the team to guess..."
-                );
+            currentRoom.currentTeam
+        ) {
+
+            instruction.textContent =
+                currentLanguage === "ar"
+                    ? `اختر كلمة — متبقي ${currentRoom.remainingGuesses} تخمين`
+                    : `Choose a card — ${currentRoom.remainingGuesses} guesses left`;
+
+        }
+
+        else {
+
+            instruction.textContent =
+                currentLanguage === "ar"
+                    ? "بانتظار تخمين الفريق..."
+                    : "Waiting for the team to guess...";
+
+        }
 
     }
 
@@ -1999,25 +2158,25 @@ function renderGameBoard() {
     );
 
 
-    /*
+    /* =====================================================
        CURRENT CLUE
-    */
+    ===================================================== */
 
     if (
         currentRoom.clue
     ) {
 
-        const clue =
+        const clueBox =
             document.createElement(
                 "div"
             );
 
 
-        clue.className =
+        clueBox.className =
             "current-clue";
 
 
-        clue.innerHTML =
+        clueBox.innerHTML =
             `
             <span>
                 ${
@@ -2038,15 +2197,15 @@ function renderGameBoard() {
 
 
         gameScreen.appendChild(
-            clue
+            clueBox
         );
 
     }
 
 
-    /*
+    /* =====================================================
        CARDS
-    */
+    ===================================================== */
 
     const board =
         document.createElement(
@@ -2071,23 +2230,55 @@ function renderGameBoard() {
                 "card";
 
 
+            card.type =
+                "button";
+
+
             card.textContent =
                 cardData.word;
 
 
+            const isSpymaster =
+                currentPlayer.role ===
+                "spymaster";
+
+
+            const isMyTurn =
+                currentPlayer.team ===
+                currentRoom.currentTeam;
+
+
             /*
-               Revealed cards
+               REVEALED CARD
             */
 
             if (
                 cardData.revealed
             ) {
 
-                card.classList.add(
-                    `team-${cardData.type}`
-                );
-
                 if (
+                    cardData.type ===
+                    "blue"
+                ) {
+
+                    card.classList.add(
+                        "team-blue"
+                    );
+
+                }
+
+                else if (
+                    cardData.type ===
+                    "red"
+                ) {
+
+                    card.classList.add(
+                        "team-red"
+                    );
+
+                }
+
+                else if (
                     cardData.type ===
                     "neutral"
                 ) {
@@ -2098,7 +2289,7 @@ function renderGameBoard() {
 
                 }
 
-                if (
+                else if (
                     cardData.type ===
                     "assassin"
                 ) {
@@ -2113,13 +2304,8 @@ function renderGameBoard() {
 
 
             /*
-               Spymaster secret colors
+               SPYMASTER SECRET MAP
             */
-
-            const isSpymaster =
-                currentPlayer.role ===
-                "spymaster";
-
 
             if (
                 isSpymaster &&
@@ -2174,7 +2360,7 @@ function renderGameBoard() {
 
 
             /*
-               Selected clue cards
+               SPYMASTER SELECTED CARD
             */
 
             if (
@@ -2191,42 +2377,34 @@ function renderGameBoard() {
 
 
             /*
-               Only Operatives can guess.
-               Spymaster can select clue cards.
+               SPYMASTER CLICK
             */
 
-            const canClick =
-                (
-                    currentPlayer.role ===
-                    "spymaster" &&
-
-                    currentPlayer.team ===
-                    currentRoom.currentTeam &&
-
-                    currentRoom.phase ===
+            const canSpymasterSelect =
+                isSpymaster &&
+                isMyTurn &&
+                currentRoom.phase ===
                     "clue" &&
+                !cardData.revealed;
 
-                    !cardData.revealed
-                )
-                ||
-                (
-                    currentPlayer.role ===
+
+            /*
+               OPERATIVE CLICK
+            */
+
+            const canOperativeGuess =
+                currentPlayer.role ===
                     "operative" &&
-
-                    currentPlayer.team ===
-                    currentRoom.currentTeam &&
-
-                    currentRoom.phase ===
+                isMyTurn &&
+                currentRoom.phase ===
                     "guessing" &&
-
-                    !cardData.revealed
-                );
+                !cardData.revealed;
 
 
-            if (canClick) {
-
-                card.style.cursor =
-                    "pointer";
+            if (
+                canSpymasterSelect ||
+                canOperativeGuess
+            ) {
 
                 card.classList.add(
                     "operative-card"
@@ -2235,18 +2413,14 @@ function renderGameBoard() {
 
                 card.addEventListener(
                     "click",
-                    () =>
+                    () => {
+
                         handleCardClick(
                             cardData
-                        )
+                        );
+
+                    }
                 );
-
-            }
-
-            else {
-
-                card.disabled =
-                    false;
 
             }
 
@@ -2264,18 +2438,18 @@ function renderGameBoard() {
     );
 
 
-    /*
-       GAME CONTROLS
-    */
+    /* =====================================================
+       CONTROLS
+    ===================================================== */
 
     renderGameControls(
         gameScreen
     );
 
 
-    /*
+    /* =====================================================
        GAME OVER
-    */
+    ===================================================== */
 
     if (
         currentRoom.status ===
@@ -2299,20 +2473,13 @@ function renderGameControls(
     gameScreen
 ) {
 
-    if (!currentPlayer) {
+    if (
+        !currentPlayer
+    ) {
 
         return;
 
     }
-
-
-    /*
-       SPYMASTER
-    */
-
-    const isSpymaster =
-        currentPlayer.role ===
-        "spymaster";
 
 
     const isMyTeam =
@@ -2320,11 +2487,18 @@ function renderGameControls(
         currentRoom.currentTeam;
 
 
+    /*
+       SPYMASTER
+    */
+
     if (
-        isSpymaster &&
+        currentPlayer.role ===
+            "spymaster" &&
+
         isMyTeam &&
+
         currentRoom.phase ===
-        "clue"
+            "clue"
     ) {
 
         const panel =
@@ -2335,6 +2509,10 @@ function renderGameControls(
 
         panel.className =
             "clue-panel";
+
+
+        const selectedCount =
+            selectedClueCards.size;
 
 
         panel.innerHTML =
@@ -2366,8 +2544,9 @@ function renderGameControls(
                     min="1"
                     max="9"
                     value="${
-                        selectedClueCards.size ||
-                        1
+                        selectedCount > 0
+                            ? selectedCount
+                            : 1
                     }"
                 >
 
@@ -2387,15 +2566,15 @@ function renderGameControls(
             <p
                 style="
                     margin-top:10px;
+                    text-align:center;
                     color:#5f6368;
                     font-size:13px;
-                    text-align:center;
                 "
             >
                 ${
                     currentLanguage === "ar"
-                        ? `الكلمات المحددة: ${selectedClueCards.size}`
-                        : `Selected words: ${selectedClueCards.size}`
+                        ? `الكلمات المحددة: ${selectedCount}`
+                        : `Selected words: ${selectedCount}`
                 }
             </p>
             `;
@@ -2406,11 +2585,10 @@ function renderGameControls(
         );
 
 
-        $("giveClueButton")
-            ?.addEventListener(
-                "click",
-                giveClue
-            );
+        $("giveClueButton")?.addEventListener(
+            "click",
+            giveClue
+        );
 
 
         return;
@@ -2419,7 +2597,7 @@ function renderGameControls(
 
 
     /*
-       OPERATIVE WAITING
+       OPERATIVE
     */
 
     if (
@@ -2437,21 +2615,28 @@ function renderGameControls(
             "instruction";
 
 
-        message.textContent =
-            currentPlayer.team ===
-                currentRoom.currentTeam &&
+        if (
             currentPlayer.role ===
-                "operative"
-                ? (
-                    currentLanguage === "ar"
-                        ? "اختر كلمة من الكلمات 👆"
-                        : "Choose a card 👆"
-                )
-                : (
-                    currentLanguage === "ar"
-                        ? "بانتظار الفريق..."
-                        : "Waiting for the team..."
-                );
+                "operative" &&
+
+            isMyTeam
+        ) {
+
+            message.textContent =
+                currentLanguage === "ar"
+                    ? "اختر كلمة من الكلمات 👆"
+                    : "Choose a card 👆";
+
+        }
+
+        else {
+
+            message.textContent =
+                currentLanguage === "ar"
+                    ? "بانتظار الفريق..."
+                    : "Waiting for the team...";
+
+        }
 
 
         gameScreen.appendChild(
@@ -2482,38 +2667,45 @@ function handleCardClick(
 
 
     /*
-       SPYMASTER:
-       Select multiple cards
+       SPYMASTER
     */
 
     if (
         currentPlayer.role ===
-        "spymaster" &&
+            "spymaster" &&
 
         currentPlayer.team ===
-        currentRoom.currentTeam &&
+            currentRoom.currentTeam &&
 
         currentRoom.phase ===
-        "clue" &&
+            "clue" &&
 
         !cardData.revealed
     ) {
 
         const id =
-            String(cardData.id);
+            String(
+                cardData.id
+            );
 
 
         if (
-            selectedClueCards.has(id)
+            selectedClueCards.has(
+                id
+            )
         ) {
 
-            selectedClueCards.delete(id);
+            selectedClueCards.delete(
+                id
+            );
 
         }
 
         else {
 
-            selectedClueCards.add(id);
+            selectedClueCards.add(
+                id
+            );
 
         }
 
@@ -2526,8 +2718,7 @@ function handleCardClick(
 
 
     /*
-       OPERATIVE:
-       Make a guess
+       OPERATIVE
     */
 
     if (
@@ -2590,7 +2781,10 @@ async function giveClue() {
         $("clueNumber");
 
 
-    if (!input || !numberInput) {
+    if (
+        !input ||
+        !numberInput
+    ) {
 
         return;
 
@@ -2607,7 +2801,9 @@ async function giveClue() {
         );
 
 
-    if (!clue) {
+    if (
+        !clue
+    ) {
 
         alert(
             currentLanguage === "ar"
@@ -2638,8 +2834,9 @@ async function giveClue() {
 
 
     if (
+        !currentPlayer ||
         currentPlayer.role !==
-        "spymaster"
+            "spymaster"
     ) {
 
         return;
@@ -2674,35 +2871,61 @@ async function giveClue() {
 
 
     /*
-       Save clue.
-       The selected cards stay local
-       to the Spymaster only.
+       One Firestore update.
+
+       This is intentionally the ONLY
+       database write needed to send
+       the clue to every player.
     */
 
-    await updateDoc(
-        doc(
-            db,
-            "rooms",
-            currentRoomId
-        ),
-        {
+    try {
 
-            clue,
+        await updateDoc(
+            doc(
+                db,
+                "rooms",
+                currentRoomId
+            ),
+            {
 
-            clueNumber:
-                number,
+                clue,
 
-            remainingGuesses:
-                number + 1,
+                clueNumber:
+                    number,
 
-            phase:
-                "guessing"
+                remainingGuesses:
+                    number + 1,
 
-        }
-    );
+                phase:
+                    "guessing"
+
+            }
+        );
 
 
-    selectedClueCards.clear();
+        /*
+           Clear local selections after
+           Firestore accepts the clue.
+        */
+
+        selectedClueCards.clear();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Give clue error:",
+            error
+        );
+
+        alert(
+            currentLanguage === "ar"
+                ? "حدث خطأ أثناء إرسال التلميح."
+                : "Failed to send the clue."
+        );
+
+    }
 
 }
 
@@ -2733,20 +2956,20 @@ async function makeGuess(
         cards.findIndex(
             card =>
                 String(card.id) ===
-                String(selectedCard.id)
+                String(
+                    selectedCard.id
+                )
         );
 
 
-    if (index === -1) {
+    if (
+        index === -1
+    ) {
 
         return;
 
     }
 
-
-    /*
-       Prevent duplicate guesses
-    */
 
     if (
         cards[index].revealed
@@ -2819,17 +3042,19 @@ async function makeGuess(
         const scores = {
 
             blue:
-                currentRoom.scores?.blue || 0,
+                currentRoom.scores?.blue ||
+                0,
 
             red:
-                currentRoom.scores?.red || 0
+                currentRoom.scores?.red ||
+                0
 
         };
 
 
         scores[
             currentRoom.currentTeam
-        ]++;
+        ] += 1;
 
 
         const remaining =
@@ -2840,11 +3065,12 @@ async function makeGuess(
 
 
         /*
-           TEAM WINS
+           WIN
         */
 
         if (
-            remaining === 0
+            remaining ===
+            0
         ) {
 
             await updateDoc(
@@ -2882,11 +3108,12 @@ async function makeGuess(
 
 
         /*
-           END TURN
+           TURN FINISHED
         */
 
         if (
-            nextGuesses <= 0
+            nextGuesses <=
+            0
         ) {
 
             await endTurn(
@@ -2924,17 +3151,21 @@ async function makeGuess(
 
 
     /*
-       WRONG TEAM OR NEUTRAL
+       WRONG TEAM / NEUTRAL
     */
 
     await endTurn(
         cards,
         {
+
             blue:
-                currentRoom.scores?.blue || 0,
+                currentRoom.scores?.blue ||
+                0,
 
             red:
-                currentRoom.scores?.red || 0
+                currentRoom.scores?.red ||
+                0
+
         }
     );
 
@@ -3025,13 +3256,16 @@ function renderGameOver(
         currentRoom.winner;
 
 
-    const winnerName =
-        winner === "blue"
+    const winnerText =
+        winner ===
+        "blue"
+
             ? (
                 currentLanguage === "ar"
                     ? "الفريق الأزرق يفوز! 🔵"
                     : "Blue Team Wins! 🔵"
             )
+
             : (
                 currentLanguage === "ar"
                     ? "الفريق الأحمر يفوز! 🔴"
@@ -3046,7 +3280,7 @@ function renderGameOver(
         </span>
 
         <h2>
-            ${winnerName}
+            ${winnerText}
         </h2>
 
         <button
@@ -3072,11 +3306,10 @@ function renderGameOver(
     );
 
 
-    $("newRoundButton")
-        ?.addEventListener(
-            "click",
-            startNewRound
-        );
+    $("newRoundButton")?.addEventListener(
+        "click",
+        startNewRound
+    );
 
 }
 
@@ -3090,7 +3323,7 @@ async function startNewRound() {
     if (
         !currentRoom ||
         currentRoom.hostId !==
-        currentUser.uid
+            currentUser.uid
     ) {
 
         return;
@@ -3110,19 +3343,22 @@ async function startNewRound() {
 
 
     const startingTeam =
-        Math.random() < 0.5
+        Math.random() <
+        0.5
             ? "blue"
             : "red";
 
 
     const blueCount =
-        startingTeam === "blue"
+        startingTeam ===
+        "blue"
             ? 9
             : 8;
 
 
     const redCount =
-        startingTeam === "red"
+        startingTeam ===
+        "red"
             ? 9
             : 8;
 
@@ -3136,7 +3372,9 @@ async function startNewRound() {
         i++
     ) {
 
-        types.push("blue");
+        types.push(
+            "blue"
+        );
 
     }
 
@@ -3147,7 +3385,9 @@ async function startNewRound() {
         i++
     ) {
 
-        types.push("red");
+        types.push(
+            "red"
+        );
 
     }
 
@@ -3158,30 +3398,41 @@ async function startNewRound() {
         i++
     ) {
 
-        types.push("neutral");
+        types.push(
+            "neutral"
+        );
 
     }
 
 
-    types.push("assassin");
+    types.push(
+        "assassin"
+    );
 
 
     const shuffledTypes =
-        shuffle(types);
+        shuffle(
+            types
+        );
 
 
     const cards =
         selectedWords.map(
-            (word, index) => ({
+            (
+                word,
+                index
+            ) => ({
 
-                id: index,
+                id:
+                    index,
 
                 word,
 
                 type:
                     shuffledTypes[index],
 
-                revealed: false
+                revealed:
+                    false
 
             })
         );
@@ -3201,13 +3452,18 @@ async function startNewRound() {
             cards,
 
             round:
-                (currentRoom.round || 1) + 1,
+                (
+                    currentRoom.round ||
+                    1
+                ) + 1,
 
             scores: {
 
-                blue: 0,
+                blue:
+                    0,
 
-                red: 0
+                red:
+                    0
 
             },
 
@@ -3267,7 +3523,8 @@ function countRemainingFromCards(
 
     return cards.filter(
         card =>
-            card.type === team &&
+            card.type ===
+                team &&
             !card.revealed
     ).length;
 
@@ -3299,7 +3556,9 @@ $("copyRoomButton")?.addEventListener(
             setTimeout(
                 () => {
 
-                    if ($("copyRoomButton")) {
+                    if (
+                        $("copyRoomButton")
+                    ) {
 
                         $("copyRoomButton")
                             .textContent =
@@ -3331,7 +3590,9 @@ $("copyRoomButton")?.addEventListener(
    SHUFFLE
 ========================================================= */
 
-function shuffle(array) {
+function shuffle(
+    array
+) {
 
     const result =
         [...array];
