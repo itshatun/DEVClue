@@ -190,6 +190,12 @@ onAuthStateChanged(
 
         authReady = !!user;
 
+        console.log(
+            "⚡ Auth ready:",
+            authReady,
+            new Date().toLocaleTimeString()
+        );
+
         if (user) {
 
             console.log(
